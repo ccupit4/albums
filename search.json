@@ -11,7 +11,7 @@
     "href": "index.html#how-similarity-is-measured",
     "title": "Album Cover Similarity Analysis",
     "section": "How Similarity Is Measured",
-    "text": "How Similarity Is Measured\nAlbum covers were analyzed across two visual dimensions:\n\nColor (HSV Palette): Compares the distribution of hue, color saturation, and brightness across the image.\nDesign (Spatial Composition): Compares the spatial layout, balance of light and dark regions, and structural composition.\n\nScores range from -1.0 (complete opposites) to +1.0 (virtually identical)."
+    "text": "How Similarity Is Measured\nAlbum covers were analyzed across two visual dimensions:\n\nColor (HSV Palette): Compares the distribution of hue, color saturation, and brightness across the image.\nDesign (Spatial Composition): Compares the spatial layout, balance of light and dark regions, and structural composition.\n\nScores range from -1.0 (complete opposites) to +1.0 (virtually identical).\n\n\n\n\n\n\nTipExplore More Data\n\n\n\nBrowse the newly added 1,000 Pop Albums Catalog featuring searchable releases and cover artwork thumbnails."
   },
   {
     "objectID": "index.html#most-similar-album-covers",
@@ -47,5 +47,26 @@
     "title": "About",
     "section": "",
     "text": "About this site"
+  },
+  {
+    "objectID": "pop-albums.html",
+    "href": "pop-albums.html",
+    "title": "1,000 Pop Albums",
+    "section": "",
+    "text": "This catalog contains 1000 distinct pop albums, EPs, and singles retrieved from the iTunes Search API. You can search by artist or album name, sort columns, or inspect album cover artwork."
+  },
+  {
+    "objectID": "pop-albums.html#top-artists-in-the-dataset",
+    "href": "pop-albums.html#top-artists-in-the-dataset",
+    "title": "1,000 Pop Albums",
+    "section": "Top Artists in the Dataset",
+    "text": "Top Artists in the Dataset"
+  },
+  {
+    "objectID": "pop-albums.html#interactive-album-browser",
+    "href": "pop-albums.html#interactive-album-browser",
+    "title": "1,000 Pop Albums",
+    "section": "Interactive Album Browser",
+    "text": "Interactive Album Browser\nUse the search box in the upper right to find specific artists, albums, or genres."
   }
 ]

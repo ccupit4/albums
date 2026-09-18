@@ -18,10 +18,28 @@ library(jsonlite)
 albums <- read_csv("album_metadata.csv", show_col_types = FALSE)
 pairs <- read_csv("album_similarity_pairs.csv", show_col_types = FALSE)
 
-# Build symmetrical pairwise relationships
+# Lookup maps for artwork URLs and local image paths
+url_map <- setNames(albums$artwork_url, albums$clean_title)
+local_map <- setNames(albums$image_path, albums$clean_title)
+
+# Build symmetrical pairwise relationships with CDN artwork URLs
 pairs_sym <- bind_rows(
-  pairs |> transmute(target = title1, other_title = title2, other_artist = artist2, other_img = img2, similarity, color_sim, design_sim),
-  pairs |> transmute(target = title2, other_title = title1, other_artist = artist1, other_img = img1, similarity, color_sim, design_sim)
+  pairs |> transmute(
+    target = title1,
+    other_title = title2,
+    other_artist = artist2,
+    other_img = url_map[title2],
+    other_local = local_map[title2],
+    similarity, color_sim, design_sim
+  ),
+  pairs |> transmute(
+    target = title2,
+    other_title = title1,
+    other_artist = artist1,
+    other_img = url_map[title1],
+    other_local = local_map[title1],
+    similarity, color_sim, design_sim
+  )
 )
 
 album_data <- list()
@@ -31,7 +49,8 @@ for (i in seq_len(nrow(albums))) {
   album_data[[t]] <- list(
     title = t,
     artist = albums$artist[i],
-    img = albums$image_path[i],
+    img = albums$artwork_url[i],
+    local_img = albums$image_path[i],
     overall_most = rel |> arrange(desc(similarity)) |> slice_head(n = 3),
     overall_least = rel |> arrange(similarity) |> slice_head(n = 3),
     color_most = rel |> arrange(desc(color_sim)) |> slice_head(n = 3),
@@ -178,7 +197,7 @@ function initAlbumComparison() {
 
     return `
       <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <img src="${item.other_img}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 4px; border: 1px solid #e2e8f0;" alt="${item.other_title}"/>
+        <img src="${item.other_img}" onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;delete this.dataset.fallback;}" data-fallback="${item.other_local}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 4px; border: 1px solid #e2e8f0; display: block;" alt="${item.other_title}"/>
         <div style="font-weight: 600; font-size: 0.85rem; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.other_title}">${item.other_title}</div>
         <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 6px;">${item.other_artist}</div>
         <div style="display: inline-block; background: ${badgeBg}; color: ${badgeColor}; font-weight: 600; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;">
@@ -199,7 +218,7 @@ function initAlbumComparison() {
 
     selectedCard.innerHTML = `
       <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #3b82f6; letter-spacing: 0.05em; margin-bottom: 6px;">Selected Album</div>
-      <img src="${current.img}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1;" alt="${current.title}"/>
+      <img src="${current.img}" onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;delete this.dataset.fallback;}" data-fallback="${current.local_img}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; display: block;" alt="${current.title}"/>
       <h3 style="margin: 12px 0 4px 0; font-size: 1.15rem; color: #0f172a;">${current.title}</h3>
       <div style="font-size: 0.9rem; color: #64748b; font-weight: 500;">${current.artist}</div>
       <div style="margin-top: 10px; font-size: 0.75rem; color: #475569; background: #eff6ff; padding: 6px; border-radius: 6px;">
@@ -245,6 +264,9 @@ if (document.readyState === "loading") {
 #| echo: false
 
 albums |>
-  select(Artist = artist, Album = clean_title, `Release Date` = release_date) |>
-  knitr::kable()
+  mutate(
+    Cover = sprintf('<img src="%s" width="55" height="55" style="border-radius: 4px; object-fit: cover; display: inline-block; vertical-align: middle;" alt="%s"/>', artwork_url, clean_title)
+  ) |>
+  select(Cover, Artist = artist, Album = clean_title, `Release Date` = release_date) |>
+  knitr::kable(format = "html", escape = FALSE)
 ```

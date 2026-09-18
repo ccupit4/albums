@@ -28,6 +28,11 @@ Album covers were analyzed across two visual dimensions:
 
 Scores range from **-1.0** (complete opposites) to **+1.0** (virtually identical).
 
+::: {.callout-tip}
+### Explore More Data
+Browse the newly added [**1,000 Pop Albums Catalog**](pop-albums.qmd) featuring searchable releases and cover artwork thumbnails.
+:::
+
 ---
 
 ## Most Similar Album Covers

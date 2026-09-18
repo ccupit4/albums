@@ -1,0 +1,82 @@
+---
+title: "1,000 Pop Albums"
+subtitle: "Explore cover art and metadata across 1,000 pop albums and singles from iTunes"
+format:
+  html:
+    page-layout: full
+    toc: true
+---
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+#| echo: false
+
+library(tidyverse)
+library(DT)
+
+pop_albums <- read_csv("pop_albums.csv", show_col_types = FALSE)
+```
+
+This catalog contains **`r nrow(pop_albums)`** distinct pop albums, EPs, and singles retrieved from the iTunes Search API. You can search by artist or album name, sort columns, or inspect album cover artwork.
+
+## Top Artists in the Dataset
+
+```{r}
+#| label: top-artists
+#| echo: false
+#| fig-height: 4
+
+pop_albums |>
+  count(artist, sort = TRUE) |>
+  slice_head(n = 10) |>
+  ggplot(aes(x = fct_reorder(artist, n), y = n)) +
+  geom_col(fill = "#3b82f6") +
+  coord_flip() +
+  labs(
+    title = "Artists with the Most Entries in the Catalog",
+    x = NULL,
+    y = "Number of Releases"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+## Interactive Album Browser
+
+Use the search box in the upper right to find specific artists, albums, or genres.
+
+```{r}
+#| label: album-table
+#| echo: false
+
+pop_albums |>
+  mutate(
+    Cover = sprintf(
+      '<a href="%s" target="_blank"><img src="%s" width="48" height="48" style="border-radius: 4px; object-fit: cover;" loading="lazy" alt="Cover"/></a>',
+      cover_full,
+      cover_thumbnail
+    )
+  ) |>
+  select(
+    Cover,
+    Artist = artist,
+    Album = album,
+    Year = year,
+    Tracks = tracks,
+    Genre = genre
+  ) |>
+  datatable(
+    escape = FALSE,
+    rownames = FALSE,
+    options = list(
+      pageLength = 25,
+      lengthMenu = c(10, 25, 50, 100),
+      autoWidth = TRUE,
+      columnDefs = list(
+        list(orderable = FALSE, targets = 0),
+        list(width = "60px", targets = 0)
+      )
+    )
+  )
+```

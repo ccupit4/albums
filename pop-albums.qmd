@@ -1,10 +1,11 @@
 ---
-title: "1,000 Pop Albums"
-subtitle: "Explore cover art and metadata across 1,000 pop albums and singles from iTunes"
+title: "1,000 Pop Album Covers: Visual Comparison"
+subtitle: "Explore how 1,000 pop album covers compare in color palette, brightness, and vibrancy"
 format:
   html:
     page-layout: full
     toc: true
+    code-fold: true
 ---
 
 ```{r}
@@ -14,37 +15,196 @@ format:
 #| echo: false
 
 library(tidyverse)
+library(plotly)
 library(DT)
 
 pop_albums <- read_csv("pop_albums.csv", show_col_types = FALSE)
 ```
 
-This catalog contains **`r nrow(pop_albums)`** distinct pop albums, EPs, and singles retrieved from the iTunes Search API. You can search by artist or album name, sort columns, or inspect album cover artwork.
+Understanding and comparing 1,000 album covers at once can be overwhelming. To make comparisons intuitive, every album cover was analyzed along two key visual axes:
 
-## Top Artists in the Dataset
+- **Brightness (0–100%):** From shadow-heavy, pitch-black photography to stark white minimalist backgrounds.
+- **Color Saturation / Vibrancy (0–100%):** From black-and-white monochrome to neon, hyper-saturated palettes.
+
+---
+
+## 1. Visual Comparison Map
+
+Hover over any point below to see the album title, artist, year, and its visual profile.
 
 ```{r}
-#| label: top-artists
+#| label: scatter-plot
 #| echo: false
-#| fig-height: 4
 
-pop_albums |>
-  count(artist, sort = TRUE) |>
-  slice_head(n = 10) |>
-  ggplot(aes(x = fct_reorder(artist, n), y = n)) +
-  geom_col(fill = "#3b82f6") +
-  coord_flip() +
+p <- pop_albums |>
+  ggplot(aes(
+    x = brightness,
+    y = saturation,
+    color = palette,
+    text = paste0(
+      "<b>", htmltools::htmlEscape(album), "</b><br>",
+      "Artist: ", htmltools::htmlEscape(artist), "<br>",
+      "Year: ", year, "<br>",
+      "Palette: ", palette, "<br>",
+      "Brightness: ", brightness, "%<br>",
+      "Vibrancy: ", saturation, "%"
+    )
+  )) +
+  geom_point(alpha = 0.65, size = 2.2) +
+  scale_color_manual(values = c(
+    "Cool Blue" = "#2563eb",
+    "Dark & Moody" = "#1e293b",
+    "Green" = "#16a34a",
+    "Minimalist White" = "#94a3b8",
+    "Monochrome / Gray" = "#64748b",
+    "Pink & Magenta" = "#db2777",
+    "Warm Red & Orange" = "#ea580c",
+    "Warm Yellow & Gold" = "#ca8a04"
+  )) +
   labs(
-    title = "Artists with the Most Entries in the Catalog",
-    x = NULL,
-    y = "Number of Releases"
+    title = "Color Saturation vs. Brightness across 1,000 Pop Covers",
+    x = "Brightness (% 0 = Dark, 100 = Light)",
+    y = "Color Vibrancy (% 0 = Grayscale, 100 = Vivid)",
+    color = "Palette Style"
   ) +
-  theme_minimal(base_size = 12)
+  theme_minimal(base_size = 11)
+
+ggplotly(p, tooltip = "text")
 ```
 
-## Interactive Album Browser
+---
 
-Use the search box in the upper right to find specific artists, albums, or genres.
+## 2. Extreme Comparisons: The Visual Spectrum
+
+Here is what the extremes of the 1,000 album collection look like when placed side-by-side.
+
+### Brightest vs. Darkest Covers
+
+```{r}
+#| label: light-vs-dark
+#| results: asis
+#| echo: false
+
+bright_albums <- pop_albums |> arrange(desc(brightness)) |> slice_head(n = 3)
+dark_albums <- pop_albums |> arrange(brightness) |> slice_head(n = 3)
+
+cat('<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">\n')
+
+# Brightest column
+cat('<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">\n')
+cat('<h4 style="margin-top:0; color: #0284c7;">☀️ Brightest (High Exposure & White)</h4>\n')
+cat('<div style="display: flex; gap: 12px; flex-wrap: wrap;">\n')
+for (i in seq_len(nrow(bright_albums))) {
+  cat(paste0(
+    '<div style="text-align: center; width: 110px;">',
+    '<img src="', bright_albums$cover_thumbnail[i], '" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #ccc;"/>',
+    '<div style="font-size: 0.75em; font-weight: bold; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">', htmltools::htmlEscape(bright_albums$album[i]), '</div>',
+    '<div style="font-size: 0.7em; color: #64748b;">', bright_albums$brightness[i], '% Light</div>',
+    '</div>'
+  ))
+}
+cat('</div></div>\n')
+
+# Darkest column
+cat('<div style="background: #0f172a; color: #f8fafc; border-radius: 8px; padding: 16px;">\n')
+cat('<h4 style="margin-top:0; color: #38bdf8;">🌑 Darkest (Shadows & Low-Key)</h4>\n')
+cat('<div style="display: flex; gap: 12px; flex-wrap: wrap;">\n')
+for (i in seq_len(nrow(dark_albums))) {
+  cat(paste0(
+    '<div style="text-align: center; width: 110px;">',
+    '<img src="', dark_albums$cover_thumbnail[i], '" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #334155;"/>',
+    '<div style="font-size: 0.75em; font-weight: bold; margin-top: 4px; color: #e2e8f0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">', htmltools::htmlEscape(dark_albums$album[i]), '</div>',
+    '<div style="font-size: 0.7em; color: #94a3b8;">', dark_albums$brightness[i], '% Light</div>',
+    '</div>'
+  ))
+}
+cat('</div></div>\n')
+
+cat('</div>\n')
+```
+
+### Most Saturated (Vivid) vs. Least Saturated (Monochrome)
+
+```{r}
+#| label: vivid-vs-mono
+#| results: asis
+#| echo: false
+
+vivid_albums <- pop_albums |> arrange(desc(saturation)) |> slice_head(n = 3)
+mono_albums <- pop_albums |> arrange(saturation) |> slice_head(n = 3)
+
+cat('<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">\n')
+
+# Vivid column
+cat('<div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 16px;">\n')
+cat('<h4 style="margin-top:0; color: #ea580c;">🎨 Most Vivid & Colorful</h4>\n')
+cat('<div style="display: flex; gap: 12px; flex-wrap: wrap;">\n')
+for (i in seq_len(nrow(vivid_albums))) {
+  cat(paste0(
+    '<div style="text-align: center; width: 110px;">',
+    '<img src="', vivid_albums$cover_thumbnail[i], '" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #f97316;"/>',
+    '<div style="font-size: 0.75em; font-weight: bold; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">', htmltools::htmlEscape(vivid_albums$album[i]), '</div>',
+    '<div style="font-size: 0.7em; color: #c2410c;">', vivid_albums$saturation[i], '% Saturation</div>',
+    '</div>'
+  ))
+}
+cat('</div></div>\n')
+
+# Monochrome column
+cat('<div style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px;">\n')
+cat('<h4 style="margin-top:0; color: #475569;">📷 Grayscale / Black & White</h4>\n')
+cat('<div style="display: flex; gap: 12px; flex-wrap: wrap;">\n')
+for (i in seq_len(nrow(mono_albums))) {
+  cat(paste0(
+    '<div style="text-align: center; width: 110px;">',
+    '<img src="', mono_albums$cover_thumbnail[i], '" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #94a3b8;"/>',
+    '<div style="font-size: 0.75em; font-weight: bold; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">', htmltools::htmlEscape(mono_albums$album[i]), '</div>',
+    '<div style="font-size: 0.7em; color: #64748b;">', mono_albums$saturation[i], '% Saturation</div>',
+    '</div>'
+  ))
+}
+cat('</div></div>\n')
+
+cat('</div>\n')
+```
+
+---
+
+## 3. Compare by Palette Style
+
+```{r}
+#| label: palette-bar
+#| echo: false
+#| fig-height: 3.5
+
+pop_albums |>
+  count(palette, sort = TRUE) |>
+  ggplot(aes(x = fct_reorder(palette, n), y = n, fill = palette)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  scale_fill_manual(values = c(
+    "Cool Blue" = "#2563eb",
+    "Dark & Moody" = "#1e293b",
+    "Green" = "#16a34a",
+    "Minimalist White" = "#94a3b8",
+    "Monochrome / Gray" = "#64748b",
+    "Pink & Magenta" = "#db2777",
+    "Warm Red & Orange" = "#ea580c",
+    "Warm Yellow & Gold" = "#ca8a04"
+  )) +
+  labs(
+    title = "Distribution of Color Styles in 1,000 Pop Albums",
+    x = NULL,
+    y = "Number of Album Covers"
+  ) +
+  theme_minimal(base_size = 11)
+```
+
+---
+
+## 4. Search and Filter Table
+
+Use the filter boxes at the top of each column (or the search bar) to group and compare specific styles, artists, or years.
 
 ```{r}
 #| label: album-table
@@ -56,6 +216,10 @@ pop_albums |>
       '<a href="%s" target="_blank"><img src="%s" width="48" height="48" style="border-radius: 4px; object-fit: cover;" loading="lazy" alt="Cover"/></a>',
       cover_full,
       cover_thumbnail
+    ),
+    Color = sprintf(
+      '<span style="display:inline-block; width:22px; height:22px; background-color:%s; border:1px solid #ccc; border-radius:3px;" title="%s"></span>',
+      hex_color, hex_color
     )
   ) |>
   select(
@@ -63,19 +227,23 @@ pop_albums |>
     Artist = artist,
     Album = album,
     Year = year,
-    Tracks = tracks,
-    Genre = genre
+    Palette = palette,
+    Color,
+    `Brightness (%)` = brightness,
+    `Vibrancy (%)` = saturation
   ) |>
   datatable(
+    filter = "top",
     escape = FALSE,
     rownames = FALSE,
     options = list(
-      pageLength = 25,
-      lengthMenu = c(10, 25, 50, 100),
+      pageLength = 15,
+      lengthMenu = c(15, 30, 50, 100),
       autoWidth = TRUE,
       columnDefs = list(
-        list(orderable = FALSE, targets = 0),
-        list(width = "60px", targets = 0)
+        list(orderable = FALSE, targets = c(0, 5)),
+        list(width = "55px", targets = 0),
+        list(width = "40px", targets = 5)
       )
     )
   )

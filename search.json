@@ -2,30 +2,16 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Album Cover Similarity Analysis",
+    "title": "Album Cover Similarity",
     "section": "",
-    "text": "Every album cover is compared across two visual dimensions:\n\nColor Palette: Compares dominant RGB hues, saturation (vibrancy), and color tone.\nDesign & Composition: Compares overall brightness balance and grayscale visual contrast.\n\nScores range from 0% (completely opposite visual styles) to 100% (virtually identical color & layout)."
+    "text": "Artist\n    \n    \n  \n\n  \n    Album\n    \n    \n  \n\n  \n    Comparison Mode\n    \n      Color & Design\n      Color Palette Only\n      Spatial Design Only\n    \n  \n\n  \n    \n      🎲 Surprise Me!"
   },
   {
-    "objectID": "index.html#how-similarity-is-measured",
-    "href": "index.html#how-similarity-is-measured",
-    "title": "Album Cover Similarity Analysis",
-    "section": "",
-    "text": "Every album cover is compared across two visual dimensions:\n\nColor Palette: Compares dominant RGB hues, saturation (vibrancy), and color tone.\nDesign & Composition: Compares overall brightness balance and grayscale visual contrast.\n\nScores range from 0% (completely opposite visual styles) to 100% (virtually identical color & layout)."
-  },
-  {
-    "objectID": "index.html#interactive-album-comparison-tool",
-    "href": "index.html#interactive-album-comparison-tool",
-    "title": "Album Cover Similarity Analysis",
-    "section": "Interactive Album Comparison Tool",
-    "text": "Interactive Album Comparison Tool\nPick any artist and album below to instantly compare its cover against the entire catalog of 1,000+ albums.\n\n\n  \n    \n      \n        1. Pick an Artist:\n      \n      \n      \n    \n\n    \n      \n        2. Pick an Album:\n      \n      \n      \n    \n\n    \n      \n        3. Compare By:\n      \n      \n        Combined (Color & Design)\n        Color Palette Only\n        Spatial Design Only\n      \n    \n  \n\n\n\n  \n  \n\n  \n    \n      \n        🟢 Most Similar Album Covers Across the Catalog\n      \n      \n      \n    \n\n    \n      \n        🔴 Least Similar Album Covers Across the Catalog"
-  },
-  {
-    "objectID": "index.html#all-analyzed-albums-1000-pop-rock-collection",
-    "href": "index.html#all-analyzed-albums-1000-pop-rock-collection",
-    "title": "Album Cover Similarity Analysis",
-    "section": "All Analyzed Albums (1,000+ Pop & Rock Collection)",
-    "text": "All Analyzed Albums (1,000+ Pop & Rock Collection)\nBrowse and search the entire collection of album covers below:"
+    "objectID": "index.html#all-albums-catalog-1000-covers",
+    "href": "index.html#all-albums-catalog-1000-covers",
+    "title": "Album Cover Similarity",
+    "section": "All Albums Catalog (1,000+ Covers)",
+    "text": "All Albums Catalog (1,000+ Covers)"
   },
   {
     "objectID": "about.html",

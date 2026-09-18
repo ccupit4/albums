@@ -4,21 +4,21 @@
     "href": "index.html",
     "title": "Album Cover Similarity",
     "section": "",
-    "text": "Genre\n    \n      All Genres\n      Pop\n      Rock\n      Hip-Hop\n      R&B / Soul\n      Country\n      Electronic\n      Latin\n      Jazz\n    \n  \n\n  \n    Artist\n    \n    \n  \n\n  \n    Album\n    \n    \n  \n\n  \n    Compare By\n    \n      Color & Design\n      Color Palette Only\n      Spatial Design Only\n    \n  \n\n  \n    Match Pool\n    \n      All Genres\n      Same Genre Only\n    \n  \n\n  \n    Matches\n    \n      Top 3\n      Top 6\n    \n  \n\n  \n    \n      🎲 Surprise Me!"
-  },
-  {
-    "objectID": "index.html#all-albums-catalog-1700-covers-across-8-genres",
-    "href": "index.html#all-albums-catalog-1700-covers-across-8-genres",
-    "title": "Album Cover Similarity",
-    "section": "All Albums Catalog (1,700+ Covers across 8 Genres)",
-    "text": "All Albums Catalog (1,700+ Covers across 8 Genres)"
+    "text": "🔍 Quick Search\n    \n    \n  \n\n  \n    Genre\n    \n      All Genres\n      Pop\n      Rock\n      Hip-Hop\n      R&B / Soul\n      Country\n      Electronic\n      Latin\n      Jazz\n    \n  \n\n  \n    Artist\n    \n    \n  \n\n  \n    Album\n    \n    \n  \n\n  \n    Compare By\n    \n      Color & Design\n      Color Palette Only\n      Spatial Design Only\n    \n  \n\n  \n    Match Pool\n    \n      All Genres\n      Same Genre Only\n    \n  \n\n  \n    Matches\n    \n      Top 3\n      Top 6\n    \n  \n\n  \n    \n      🎲 Surprise Me!\n    \n  \n\n\n\n\n  Palette Mood:\n  🌈 All\n   Warm Red\n   Cool Blue\n   Green\n   Pink\n   Yellow/Gold\n   Dark & Moody\n   White\n   Gray\n\n\n\n  \n  \n  \n\n  \n  \n    \n    \n      \n        \n          🟢 Most Similar Album Covers\n        \n        Top Matches across Catalog\n      \n      \n      \n    \n\n    \n    \n      \n        \n          🔴 Least Similar Album Covers\n        \n        Maximum Visual Contrast\n      \n      \n      \n    \n  \n\n\n\n\n  \n    \n      \n        🔬 Head-to-Head Visual Inspector\n      \n      Direct visual feature comparison between the Selected Album and its #1 Top Match\n    \n    \n      98.2% Similarity"
   },
   {
     "objectID": "about.html",
     "href": "about.html",
-    "title": "About",
+    "title": "About & Full Album Catalog",
     "section": "",
-    "text": "About this site"
+    "text": "This project explores the visual aesthetics and cover art designs of 1,788 albums spanning 8 major music genres (Pop, Rock, Hip-Hop, R&B/Soul, Country, Electronic, Latin, and Jazz).\nEvery album cover has been computationally analyzed for:"
+  },
+  {
+    "objectID": "about.html#complete-catalog-1788-albums-across-8-genres",
+    "href": "about.html#complete-catalog-1788-albums-across-8-genres",
+    "title": "About & Full Album Catalog",
+    "section": "Complete Catalog (1,788 Albums across 8 Genres)",
+    "text": "Complete Catalog (1,788 Albums across 8 Genres)\nUse the search bar and column filters below to explore the full dataset, view cover artwork, and inspect extracted color swatches."
   },
   {
     "objectID": "pop-albums.html",

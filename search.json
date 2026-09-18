@@ -4,35 +4,21 @@
     "href": "index.html",
     "title": "Album Cover Similarity Analysis",
     "section": "",
-    "text": "Code\nlibrary(tidyverse)\n\n# Load metadata and pairwise similarity metrics\nalbums &lt;- read_csv(\"album_metadata.csv\", show_col_types = FALSE)\npairs &lt;- read_csv(\"album_similarity_pairs.csv\", show_col_types = FALSE)"
+    "text": "Album covers are compared across two complementary visual dimensions:\n\nColor (HSV Palette): Compares distribution of hue, color saturation, and brightness.\nDesign (Spatial Composition): Compares spatial layout, lighting balance, and structural shapes.\n\nScores range from -1.0 (complete opposites) to +1.0 (virtually identical).\n\n\n\n\n\n\nTipExplore 1,000 Pop Albums\n\n\n\nLooking for more? Browse the 1,000 Pop Albums Catalog with interactive search, filters, and cover art thumbnails."
   },
   {
     "objectID": "index.html#how-similarity-is-measured",
     "href": "index.html#how-similarity-is-measured",
     "title": "Album Cover Similarity Analysis",
-    "section": "How Similarity Is Measured",
-    "text": "How Similarity Is Measured\nAlbum covers were analyzed across two visual dimensions:\n\nColor (HSV Palette): Compares the distribution of hue, color saturation, and brightness across the image.\nDesign (Spatial Composition): Compares the spatial layout, balance of light and dark regions, and structural composition.\n\nScores range from -1.0 (complete opposites) to +1.0 (virtually identical).\n\n\n\n\n\n\nTipExplore More Data\n\n\n\nBrowse the newly added 1,000 Pop Albums Catalog featuring searchable releases and cover artwork thumbnails."
+    "section": "",
+    "text": "Album covers are compared across two complementary visual dimensions:\n\nColor (HSV Palette): Compares distribution of hue, color saturation, and brightness.\nDesign (Spatial Composition): Compares spatial layout, lighting balance, and structural shapes.\n\nScores range from -1.0 (complete opposites) to +1.0 (virtually identical).\n\n\n\n\n\n\nTipExplore 1,000 Pop Albums\n\n\n\nLooking for more? Browse the 1,000 Pop Albums Catalog with interactive search, filters, and cover art thumbnails."
   },
   {
-    "objectID": "index.html#most-similar-album-covers",
-    "href": "index.html#most-similar-album-covers",
+    "objectID": "index.html#interactive-album-comparison-tool",
+    "href": "index.html#interactive-album-comparison-tool",
     "title": "Album Cover Similarity Analysis",
-    "section": "Most Similar Album Covers",
-    "text": "Most Similar Album Covers\nThese pairs share matching color palettes, tone, and visual structure.\n\n\nfolklore (Taylor Swift) vs. evermore (Taylor Swift)\n\n\nOverall Similarity: 77.8% | Color: 90.4% | Design: 65.1%\n\n\n\n\n\nfolklore\n\n\n\n+\n\n\n\n\nevermore\n\n\n\n\n\n\nI’m with You (Red Hot Chili Peppers) vs. Greatest Hits (Red Hot Chili Peppers)\n\n\nOverall Similarity: 66.8% | Color: 95.8% | Design: 37.8%\n\n\n\n\n\nI’m with You\n\n\n\n+\n\n\n\n\nGreatest Hits\n\n\n\n\n\n\nevermore (Taylor Swift) vs. reputation (Taylor Swift)\n\n\nOverall Similarity: 63.6% | Color: 90.4% | Design: 36.8%\n\n\n\n\n\nevermore\n\n\n\n+\n\n\n\n\nreputation\n\n\n\n\n\nfolklore & evermore: Sister albums with almost identical woodland photography, desaturated sepia tones, and centered subject composition.\nI’m with You & Greatest Hits: Minimalist white backgrounds with centered, high-contrast focal points."
-  },
-  {
-    "objectID": "index.html#least-similar-album-covers",
-    "href": "index.html#least-similar-album-covers",
-    "title": "Album Cover Similarity Analysis",
-    "section": "Least Similar Album Covers",
-    "text": "Least Similar Album Covers\nThese pairs contrast drastically in both palette (vibrant psychedelic vs. stark monochrome) and design density.\n\n\nI’m with You (Red Hot Chili Peppers) vs. Return of the Dream Canteen (Red Hot Chili Peppers)\n\n\nOverall Similarity: -7.6% | Color: 17.2% | Design: -32.4%\n\n\n\n\n\nI’m with You\n\n\n\n≠\n\n\n\n\nReturn of the Dream Canteen\n\n\n\n\n\n\nLover (Taylor Swift) vs. THE TORTURED POETS DEPARTMENT: THE ANTHOLOGY (Taylor Swift)\n\n\nOverall Similarity: -11.8% | Color: 37.6% | Design: -61.2%\n\n\n\n\n\nLover\n\n\n\n≠\n\n\n\n\nTHE TORTURED POETS DEPARTMENT: THE ANTHOLOGY\n\n\n\n\n\n\nFearless (Taylor Swift) vs. By the Way (Red Hot Chili Peppers)\n\n\nOverall Similarity: -12.6% | Color: 9.8% | Design: -34.9%\n\n\n\n\n\nFearless\n\n\n\n≠\n\n\n\n\nBy the Way\n\n\n\n\n\nI’m with You vs. Return of the Dream Canteen: Extreme contrast between Damien Hirst’s clinical white pill aesthetic and complex, neon psychedelic surrealism.\nLover vs. The Tortured Poets Department: Bright pastel pinks, baby blues, and dreamy glitter juxtaposed against stark, desaturated grayscale intimacy."
-  },
-  {
-    "objectID": "index.html#cross-artist-comparison",
-    "href": "index.html#cross-artist-comparison",
-    "title": "Album Cover Similarity Analysis",
-    "section": "Cross-Artist Comparison",
-    "text": "Cross-Artist Comparison\nWhich album from Taylor Swift is most visually akin to a Red Hot Chili Peppers album?\n\n\nClosest Match Across Artists: evermore & Greatest Hits\n\n\nSimilarity: 63% (Color: 61.7%, Design: 64.4%)\n\n\n\n\n\nTaylor Swift - evermore\n\n\n\n~\n\n\n\n\nRed Hot Chili Peppers - Greatest Hits\n\n\n\n\nBoth covers feature neutral, muted palettes with central figures framed against soft, earthy backdrops."
+    "section": "Interactive Album Comparison Tool",
+    "text": "Interactive Album Comparison Tool\nPick any album below to instantly inspect its most similar and least similar matches.\n\n\n\n&lt;!-- Step 1: Pick Artist --&gt;\n&lt;div style=\"flex: 1; min-width: 200px;\"&gt;\n  &lt;label for=\"artist-picker\" style=\"font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;\"&gt;\n    1. Pick an Artist:\n  &lt;/label&gt;\n  &lt;select id=\"artist-picker\" style=\"width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;\"&gt;\n    &lt;option value=\"Taylor Swift\" selected&gt;Taylor Swift&lt;/option&gt;\n    &lt;option value=\"Red Hot Chili Peppers\"&gt;Red Hot Chili Peppers&lt;/option&gt;\n  &lt;/select&gt;\n&lt;/div&gt;\n\n&lt;!-- Step 2: Pick Album from Artist --&gt;\n&lt;div style=\"flex: 1.5; min-width: 240px;\"&gt;\n  &lt;label for=\"album-picker\" style=\"font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;\"&gt;\n    2. Pick an Album:\n  &lt;/label&gt;\n  &lt;select id=\"album-picker\" style=\"width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;\"&gt;\n    &lt;!-- Populated dynamically by artist --&gt;\n  &lt;/select&gt;\n&lt;/div&gt;\n\n&lt;!-- Step 3: Pick Metric --&gt;\n&lt;div style=\"width: 220px;\"&gt;\n  &lt;label for=\"metric-picker\" style=\"font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;\"&gt;\n    3. Compare By:\n  &lt;/label&gt;\n  &lt;select id=\"metric-picker\" style=\"width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;\"&gt;\n    &lt;option value=\"overall\" selected&gt;Combined (Color & Design)&lt;/option&gt;\n    &lt;option value=\"color\"&gt;Color Palette Only&lt;/option&gt;\n    &lt;option value=\"design\"&gt;Spatial Design Only&lt;/option&gt;\n  &lt;/select&gt;\n&lt;/div&gt;\n\n\n\n\n\n&lt;!-- Injected by JS --&gt;\n\n\n\n&lt;!-- Most Similar --&gt;\n&lt;div style=\"background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px;\"&gt;\n  &lt;h4 style=\"margin-top: 0; margin-bottom: 12px; color: #166534; display: flex; align-items: center; gap: 8px;\"&gt;\n    &lt;span&gt;🟢&lt;/span&gt; Most Similar Album Covers\n  &lt;/h4&gt;\n  &lt;div id=\"most-similar-cards\" style=\"display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;\"&gt;\n    &lt;!-- Injected by JS --&gt;\n  &lt;/div&gt;\n&lt;/div&gt;\n\n&lt;!-- Least Similar --&gt;\n&lt;div style=\"background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px;\"&gt;\n  &lt;h4 style=\"margin-top: 0; margin-bottom: 12px; color: #991b1b; display: flex; align-items: center; gap: 8px;\"&gt;\n    &lt;span&gt;🔴&lt;/span&gt; Least Similar Album Covers\n  &lt;/h4&gt;\n  &lt;div id=\"least-similar-cards\" style=\"display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;\"&gt;\n    &lt;!-- Injected by JS --&gt;\n  &lt;/div&gt;\n&lt;/div&gt;"
   },
   {
     "objectID": "index.html#all-analyzed-albums",
@@ -51,22 +37,36 @@
   {
     "objectID": "pop-albums.html",
     "href": "pop-albums.html",
-    "title": "1,000 Pop Albums",
+    "title": "1,000 Pop Album Covers: Visual Comparison",
     "section": "",
-    "text": "This catalog contains 1000 distinct pop albums, EPs, and singles retrieved from the iTunes Search API. You can search by artist or album name, sort columns, or inspect album cover artwork."
+    "text": "Understanding and comparing 1,000 album covers at once can be overwhelming. To make comparisons intuitive, every album cover was analyzed along two key visual axes:"
   },
   {
-    "objectID": "pop-albums.html#top-artists-in-the-dataset",
-    "href": "pop-albums.html#top-artists-in-the-dataset",
-    "title": "1,000 Pop Albums",
-    "section": "Top Artists in the Dataset",
-    "text": "Top Artists in the Dataset"
+    "objectID": "pop-albums.html#visual-comparison-map",
+    "href": "pop-albums.html#visual-comparison-map",
+    "title": "1,000 Pop Album Covers: Visual Comparison",
+    "section": "1. Visual Comparison Map",
+    "text": "1. Visual Comparison Map\nHover over any point below to see the album title, artist, year, and its visual profile."
   },
   {
-    "objectID": "pop-albums.html#interactive-album-browser",
-    "href": "pop-albums.html#interactive-album-browser",
-    "title": "1,000 Pop Albums",
-    "section": "Interactive Album Browser",
-    "text": "Interactive Album Browser\nUse the search box in the upper right to find specific artists, albums, or genres."
+    "objectID": "pop-albums.html#extreme-comparisons-the-visual-spectrum",
+    "href": "pop-albums.html#extreme-comparisons-the-visual-spectrum",
+    "title": "1,000 Pop Album Covers: Visual Comparison",
+    "section": "2. Extreme Comparisons: The Visual Spectrum",
+    "text": "2. Extreme Comparisons: The Visual Spectrum\nHere is what the extremes of the 1,000 album collection look like when placed side-by-side.\n\nBrightest vs. Darkest Covers\n\n\n\n☀️ Brightest (High Exposure & White)\n\n\n\n\n\nif i could just stop the time, (may 2024-may 2025) - EP\n\n\n99.7% Light\n\n\n\n\n\nSingles\n\n\n99.2% Light\n\n\n\n\n\nmono.\n\n\n98.6% Light\n\n\n\n\n\n\n🌑 Darkest (Shadows & Low-Key)\n\n\n\n\n\nFingers Crossed - Single\n\n\n0.6% Light\n\n\n\n\n\nMIC Drop (feat. Desiigner) [Steve Aoki Remix] - Single\n\n\n1.4% Light\n\n\n\n\n\nThe 7th Sense (Sung by TAEYONG, MARK, JAEHYUN, DOYOUNG & TEN) - Single\n\n\n1.6% Light\n\n\n\n\n\n\n\nMost Saturated (Vivid) vs. Least Saturated (Monochrome)\n\n\n\n🎨 Most Vivid & Colorful\n\n\n\n\n\nChamber - Single\n\n\n98.6% Saturation\n\n\n\n\n\nPain - Single\n\n\n95.7% Saturation\n\n\n\n\n\nThe Dream Chapter: ETERNITY - EP\n\n\n93.2% Saturation\n\n\n\n\n\n\n📷 Grayscale / Black & White\n\n\n\n\n\nreputation\n\n\n0% Saturation\n\n\n\n\n\nThe Art of Loving\n\n\n0% Saturation\n\n\n\n\n\nSailor Song - Single\n\n\n0% Saturation"
+  },
+  {
+    "objectID": "pop-albums.html#compare-by-palette-style",
+    "href": "pop-albums.html#compare-by-palette-style",
+    "title": "1,000 Pop Album Covers: Visual Comparison",
+    "section": "3. Compare by Palette Style",
+    "text": "3. Compare by Palette Style"
+  },
+  {
+    "objectID": "pop-albums.html#search-and-filter-table",
+    "href": "pop-albums.html#search-and-filter-table",
+    "title": "1,000 Pop Album Covers: Visual Comparison",
+    "section": "4. Search and Filter Table",
+    "text": "4. Search and Filter Table\nUse the filter boxes at the top of each column (or the search bar) to group and compare specific styles, artists, or years."
   }
 ]

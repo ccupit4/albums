@@ -1,9 +1,9 @@
 ---
-title: "Album Cover Similarity Analysis"
-subtitle: "Interactive visual comparison tool across 1,000+ pop and rock albums"
+title: "Album Cover Similarity"
 format:
   html:
-    toc: true
+    toc: false
+    page-layout: full
 ---
 
 ```{r}
@@ -18,7 +18,6 @@ library(DT)
 
 pop_albums <- read_csv("pop_albums.csv", show_col_types = FALSE)
 
-# Build compact feature dataset for instant client-side similarity comparison
 album_catalog <- pop_albums |>
   mutate(
     hex_clean = sub("^#", "", hex_color),
@@ -49,21 +48,6 @@ album_catalog <- pop_albums |>
 json_payload <- toJSON(album_catalog, auto_unbox = TRUE)
 ```
 
-## How Similarity Is Measured
-
-Every album cover is compared across two visual dimensions:
-
-1. **Color Palette:** Compares dominant RGB hues, saturation (vibrancy), and color tone.
-2. **Design & Composition:** Compares overall brightness balance and grayscale visual contrast.
-
-Scores range from **0%** (completely opposite visual styles) to **100%** (virtually identical color & layout).
-
----
-
-## Interactive Album Comparison Tool
-
-Pick any artist and album below to instantly compare its cover against the entire catalog of **1,000+ albums**.
-
 ```{r}
 #| label: json-data
 #| results: asis
@@ -75,55 +59,170 @@ cat('\n</script>\n')
 ```
 
 ```{=html}
-<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin-bottom: 24px;">
-  <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
-    <div style="flex: 1; min-width: 220px;">
-      <label for="artist-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
-        1. Pick an Artist:
-      </label>
-      <select id="artist-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
-      </select>
-    </div>
+<style>
+  .comparison-toolbar {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .toolbar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .toolbar-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+  }
+  .toolbar-select {
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 0.95rem;
+    background: #f8fafc;
+    color: #0f172a;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .toolbar-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    background: #ffffff;
+  }
+  .btn-random {
+    background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+    height: 42px;
+  }
+  .btn-random:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.4);
+  }
+  .btn-random:active {
+    transform: translateY(1px);
+  }
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .comparison-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .match-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+  }
+  .match-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    border-color: #93c5fd;
+  }
+  .match-card:hover::after {
+    content: "Click to analyze";
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.85);
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    pointer-events: none;
+  }
+</style>
 
-    <div style="flex: 1.5; min-width: 260px;">
-      <label for="album-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
-        2. Pick an Album:
-      </label>
-      <select id="album-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
-      </select>
-    </div>
+<div class="comparison-toolbar">
+  <div class="toolbar-item" style="flex: 1.2; min-width: 220px;">
+    <label class="toolbar-label" for="artist-picker">Artist</label>
+    <select id="artist-picker" class="toolbar-select">
+    </select>
+  </div>
 
-    <div style="width: 220px;">
-      <label for="metric-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
-        3. Compare By:
-      </label>
-      <select id="metric-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
-        <option value="overall" selected>Combined (Color & Design)</option>
-        <option value="color">Color Palette Only</option>
-        <option value="design">Spatial Design Only</option>
-      </select>
-    </div>
+  <div class="toolbar-item" style="flex: 1.8; min-width: 260px;">
+    <label class="toolbar-label" for="album-picker">Album</label>
+    <select id="album-picker" class="toolbar-select">
+    </select>
+  </div>
+
+  <div class="toolbar-item" style="min-width: 200px;">
+    <label class="toolbar-label" for="metric-picker">Comparison Mode</label>
+    <select id="metric-picker" class="toolbar-select">
+      <option value="overall" selected>Color & Design</option>
+      <option value="color">Color Palette Only</option>
+      <option value="design">Spatial Design Only</option>
+    </select>
+  </div>
+
+  <div class="toolbar-item">
+    <button id="btn-surprise" class="btn-random" title="Select a random album from the 1,000+ catalog">
+      <span>🎲</span> Surprise Me!
+    </button>
   </div>
 </div>
 
-<div id="comparison-display" style="display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start;">
-  <div id="selected-card" style="background: #ffffff; border: 2px solid #3b82f6; border-radius: 10px; padding: 18px; text-align: center; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);">
+<div class="comparison-grid">
+  <!-- Left Column: Selected Target Album -->
+  <div id="selected-card" style="background: #ffffff; border: 2px solid #3b82f6; border-radius: 14px; padding: 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12); position: sticky; top: 20px;">
   </div>
 
-  <div style="display: flex; flex-direction: column; gap: 20px;">
-    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px;">
-      <h4 style="margin-top: 0; margin-bottom: 12px; color: #166534; display: flex; align-items: center; gap: 8px;">
-        <span>🟢</span> Most Similar Album Covers Across the Catalog
-      </h4>
-      <div id="most-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;">
+  <!-- Right Column: Matches -->
+  <div style="display: flex; flex-direction: column; gap: 24px;">
+    <!-- Most Similar -->
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; padding: 18px 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h4 style="margin: 0; color: #166534; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+          <span>🟢</span> Most Similar Album Covers
+        </h4>
+        <span style="font-size: 0.75rem; color: #15803d; font-weight: 600;">Top Matches across 1,000+ Albums</span>
+      </div>
+      <div id="most-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
       </div>
     </div>
 
-    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px;">
-      <h4 style="margin-top: 0; margin-bottom: 12px; color: #991b1b; display: flex; align-items: center; gap: 8px;">
-        <span>🔴</span> Least Similar Album Covers Across the Catalog
-      </h4>
-      <div id="least-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;">
+    <!-- Least Similar -->
+    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 14px; padding: 18px 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h4 style="margin: 0; color: #991b1b; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+          <span>🔴</span> Least Similar Album Covers
+        </h4>
+        <span style="font-size: 0.75rem; color: #b91c1c; font-weight: 600;">Maximum Visual Contrast</span>
+      </div>
+      <div id="least-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
       </div>
     </div>
   </div>
@@ -138,6 +237,7 @@ function initAlbumComparison() {
   const artistPicker = document.getElementById("artist-picker");
   const albumPicker = document.getElementById("album-picker");
   const metricPicker = document.getElementById("metric-picker");
+  const surpriseBtn = document.getElementById("btn-surprise");
   const selectedCard = document.getElementById("selected-card");
   const mostCards = document.getElementById("most-similar-cards");
   const leastCards = document.getElementById("least-similar-cards");
@@ -145,7 +245,7 @@ function initAlbumComparison() {
   if (!artistPicker || !albumPicker || !metricPicker || !selectedCard || !mostCards || !leastCards) return;
 
   const allArtists = Array.from(new Set(albumData.map(a => a.artist))).sort((a, b) => a.localeCompare(b));
-  const featured = ["Taylor Swift", "Red Hot Chili Peppers", "Billie Eilish", "Harry Styles", "Bruno Mars", "Olivia Rodrigo", "Dua Lipa", "Ariana Grande"];
+  const featured = ["Taylor Swift", "Red Hot Chili Peppers", "Billie Eilish", "Harry Styles", "Bruno Mars", "Olivia Rodrigo", "Dua Lipa", "Ariana Grande", "Ed Sheeran", "Adele", "Michael Jackson"];
   
   artistPicker.innerHTML = "";
   
@@ -186,6 +286,12 @@ function initAlbumComparison() {
     });
   }
 
+  function selectAlbumByName(artistName, albumName) {
+    artistPicker.value = artistName;
+    populateAlbumsForArtist(artistName, albumName);
+    updateDisplay();
+  }
+
   function renderCard(item, metric, isMatch) {
     let scoreText = "";
     if (metric === "color") {
@@ -200,14 +306,14 @@ function initAlbumComparison() {
     const badgeColor = isMatch ? "#15803d" : "#b91c1c";
 
     return `
-      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <img src="${item.cover}" onerror="this.onerror=null;this.src='${item.thumb}'" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 4px; border: 1px solid #e2e8f0; display: block;" alt="${item.album}"/>
-        <div style="font-weight: 600; font-size: 0.85rem; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.album}">${item.album}</div>
-        <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.artist} (${item.year})</div>
-        <div style="display: inline-block; background: ${badgeBg}; color: ${badgeColor}; font-weight: 600; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;">
+      <div class="match-card" onclick="window.selectAlbumByName('${item.artist.replace(/'/g, "\\'")}', '${item.album.replace(/'/g, "\\'")}')">
+        <img src="${item.cover}" onerror="this.onerror=null;this.src='${item.thumb}'" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; display: block;" alt="${item.album}"/>
+        <div style="font-weight: 700; font-size: 0.9rem; margin-top: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #0f172a;" title="${item.album}">${item.album}</div>
+        <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.artist} (${item.year})</div>
+        <div style="display: inline-block; background: ${badgeBg}; color: ${badgeColor}; font-weight: 700; font-size: 0.78rem; padding: 3px 10px; border-radius: 12px;">
           ${scoreText}
         </div>
-        <div style="font-size: 0.68rem; color: #94a3b8; margin-top: 4px;">
+        <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 6px;">
           Color: ${(item.colorSim * 100).toFixed(0)}% | Design: ${(item.designSim * 100).toFixed(0)}%
         </div>
       </div>
@@ -223,13 +329,27 @@ function initAlbumComparison() {
     if (!target) return;
 
     selectedCard.innerHTML = `
-      <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #3b82f6; letter-spacing: 0.05em; margin-bottom: 6px;">Selected Album</div>
-      <img src="${target.cover}" onerror="this.onerror=null;this.src='${target.thumb}'" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; display: block;" alt="${target.album}"/>
-      <h3 style="margin: 12px 0 4px 0; font-size: 1.15rem; color: #0f172a;">${target.album}</h3>
-      <div style="font-size: 0.9rem; color: #64748b; font-weight: 500;">${target.artist} &bull; ${target.year}</div>
-      <div style="margin-top: 10px; font-size: 0.75rem; color: #475569; background: #eff6ff; padding: 8px; border-radius: 6px; text-align: left;">
-        <div><strong>Palette:</strong> <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${target.hex};vertical-align:middle;border:1px solid #cbd5e1;"></span> ${target.palette}</div>
-        <div><strong>Brightness:</strong> ${(target.bright * 100).toFixed(0)}% | <strong>Vibrancy:</strong> ${(target.sat * 100).toFixed(0)}%</div>
+      <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: #2563eb; letter-spacing: 0.06em; margin-bottom: 8px; text-align: center;">Selected Album</div>
+      <img src="${target.cover}" onerror="this.onerror=null;this.src='${target.thumb}'" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; display: block;" alt="${target.album}"/>
+      <h3 style="margin: 14px 0 4px 0; font-size: 1.25rem; font-weight: 700; color: #0f172a; text-align: center;">${target.album}</h3>
+      <div style="font-size: 0.95rem; color: #64748b; font-weight: 500; text-align: center;">${target.artist} &bull; ${target.year}</div>
+
+      <!-- Extracted Visual DNA / Color Swatch -->
+      <div style="margin-top: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px;">
+        <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 6px;">Visual Profile</div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <span style="display:inline-block; width:18px; height:18px; border-radius:4px; background:${target.hex}; border:1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.1);"></span>
+          <span style="font-weight: 600; font-size: 0.85rem; color: #1e293b;">${target.palette}</span>
+          <span style="font-size: 0.75rem; color: #94a3b8; font-family: monospace;">${target.hex}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: #475569; padding-top: 6px; border-top: 1px dashed #e2e8f0;">
+          <span>Brightness: <strong>${(target.bright * 100).toFixed(0)}%</strong></span>
+          <span>Vibrancy: <strong>${(target.sat * 100).toFixed(0)}%</strong></span>
+          <span>Contrast: <strong>${(target.contrast * 100).toFixed(0)}%</strong></span>
+        </div>
+      </div>
+      <div style="margin-top: 12px; font-size: 0.72rem; color: #64748b; text-align: center;">
+        💡 <em>Click any similar cover on the right to analyze it</em>
       </div>
     `;
 
@@ -277,6 +397,9 @@ function initAlbumComparison() {
     leastCards.innerHTML = leastList.map(item => renderCard(item, metric, false)).join("");
   }
 
+  // Expose selectAlbumByName globally so card click handlers can call it
+  window.selectAlbumByName = selectAlbumByName;
+
   artistPicker.addEventListener("change", function() {
     populateAlbumsForArtist(artistPicker.value);
     updateDisplay();
@@ -284,6 +407,14 @@ function initAlbumComparison() {
 
   albumPicker.addEventListener("change", updateDisplay);
   metricPicker.addEventListener("change", updateDisplay);
+
+  // Surprise Me Button
+  if (surpriseBtn) {
+    surpriseBtn.addEventListener("click", function() {
+      const randomAlbum = albumData[Math.floor(Math.random() * albumData.length)];
+      selectAlbumByName(randomAlbum.artist, randomAlbum.album);
+    });
+  }
 
   populateAlbumsForArtist("Taylor Swift", "Lover");
   updateDisplay();
@@ -299,9 +430,7 @@ if (document.readyState === "loading") {
 
 ---
 
-## All Analyzed Albums (1,000+ Pop & Rock Collection)
-
-Browse and search the entire collection of album covers below:
+## All Albums Catalog (1,000+ Covers)
 
 ```{r}
 #| label: table
@@ -309,8 +438,8 @@ Browse and search the entire collection of album covers below:
 
 pop_albums |>
   mutate(
-    Cover = sprintf('<img src="%s" width="50" height="50" style="border-radius: 4px; object-fit: cover;" alt="%s" loading="lazy"/>', cover_thumbnail, album),
-    Color = sprintf('<span style="display:inline-block; width:20px; height:20px; background-color:%s; border:1px solid #cbd5e1; border-radius:3px; vertical-align:middle;" title="%s"></span>', hex_color, hex_color)
+    Cover = sprintf('<img src="%s" width="45" height="45" style="border-radius: 4px; object-fit: cover;" alt="%s" loading="lazy"/>', cover_thumbnail, album),
+    Color = sprintf('<span style="display:inline-block; width:18px; height:18px; background-color:%s; border:1px solid #cbd5e1; border-radius:3px; vertical-align:middle;" title="%s"></span>', hex_color, hex_color)
   ) |>
   select(Cover, Color, Artist = artist, Album = album, Year = year, Genre = genre, Palette = palette) |>
   datatable(

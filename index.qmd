@@ -4,7 +4,6 @@ subtitle: "Interactive visual comparison tool for Taylor Swift and Red Hot Chili
 format:
   html:
     toc: true
-    code-fold: true
 ---
 
 ```{r}
@@ -70,82 +69,73 @@ Pick any album below to instantly inspect its **most similar** and **least simil
 #| results: asis
 #| echo: false
 
-# Safely output JSON
+# Safely output JSON payload
 cat('<script type="application/json" id="album-similarity-data">')
 cat(json_payload)
 cat('</script>\n')
 
-# Render two-tier controls
+# Output HTML with 0 leading indentation so Pandoc does not treat it as a code block
 cat('
 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin-bottom: 24px;">
-  <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
-    <!-- Step 1: Pick Artist -->
-    <div style="flex: 1; min-width: 200px;">
-      <label for="artist-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
-        1. Pick an Artist:
-      </label>
-      <select id="artist-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
-        <option value="Taylor Swift" selected>Taylor Swift</option>
-        <option value="Red Hot Chili Peppers">Red Hot Chili Peppers</option>
-      </select>
-    </div>
+<div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
 
-    <!-- Step 2: Pick Album from Artist -->
-    <div style="flex: 1.5; min-width: 240px;">
-      <label for="album-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
-        2. Pick an Album:
-      </label>
-      <select id="album-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
-        <!-- Populated dynamically by artist -->
-      </select>
-    </div>
+<div style="flex: 1; min-width: 200px;">
+<label for="artist-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
+1. Pick an Artist:
+</label>
+<select id="artist-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
+<option value="Taylor Swift" selected>Taylor Swift</option>
+<option value="Red Hot Chili Peppers">Red Hot Chili Peppers</option>
+</select>
+</div>
 
-    <!-- Step 3: Pick Metric -->
-    <div style="width: 220px;">
-      <label for="metric-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
-        3. Compare By:
-      </label>
-      <select id="metric-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
-        <option value="overall" selected>Combined (Color & Design)</option>
-        <option value="color">Color Palette Only</option>
-        <option value="design">Spatial Design Only</option>
-      </select>
-    </div>
-  </div>
+<div style="flex: 1.5; min-width: 240px;">
+<label for="album-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
+2. Pick an Album:
+</label>
+<select id="album-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
+</select>
+</div>
+
+<div style="width: 220px;">
+<label for="metric-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
+3. Compare By:
+</label>
+<select id="metric-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
+<option value="overall" selected>Combined (Color & Design)</option>
+<option value="color">Color Palette Only</option>
+<option value="design">Spatial Design Only</option>
+</select>
+</div>
+
+</div>
 </div>
 
 <div id="comparison-display" style="display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start;">
-  <!-- Left column: Chosen album -->
-  <div id="selected-card" style="background: #ffffff; border: 2px solid #3b82f6; border-radius: 10px; padding: 18px; text-align: center; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);">
-    <!-- Injected by JS -->
-  </div>
+<div id="selected-card" style="background: #ffffff; border: 2px solid #3b82f6; border-radius: 10px; padding: 18px; text-align: center; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);">
+</div>
 
-  <!-- Right column: Most & Least Similar lists -->
-  <div style="display: flex; flex-direction: column; gap: 20px;">
-    <!-- Most Similar -->
-    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px;">
-      <h4 style="margin-top: 0; margin-bottom: 12px; color: #166534; display: flex; align-items: center; gap: 8px;">
-        <span>🟢</span> Most Similar Album Covers
-      </h4>
-      <div id="most-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;">
-        <!-- Injected by JS -->
-      </div>
-    </div>
+<div style="display: flex; flex-direction: column; gap: 20px;">
+<div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px;">
+<h4 style="margin-top: 0; margin-bottom: 12px; color: #166534; display: flex; align-items: center; gap: 8px;">
+<span>🟢</span> Most Similar Album Covers
+</h4>
+<div id="most-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;">
+</div>
+</div>
 
-    <!-- Least Similar -->
-    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px;">
-      <h4 style="margin-top: 0; margin-bottom: 12px; color: #991b1b; display: flex; align-items: center; gap: 8px;">
-        <span>🔴</span> Least Similar Album Covers
-      </h4>
-      <div id="least-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;">
-        <!-- Injected by JS -->
-      </div>
-    </div>
-  </div>
+<div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px;">
+<h4 style="margin-top: 0; margin-bottom: 12px; color: #991b1b; display: flex; align-items: center; gap: 8px;">
+<span>🔴</span> Least Similar Album Covers
+</h4>
+<div id="least-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;">
+</div>
+</div>
+</div>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+function initAlbumComparison() {
   const dataElement = document.getElementById("album-similarity-data");
   if (!dataElement) return;
   const albumData = JSON.parse(dataElement.textContent);
@@ -156,6 +146,8 @@ document.addEventListener("DOMContentLoaded", function() {
   const selectedCard = document.getElementById("selected-card");
   const mostCards = document.getElementById("most-similar-cards");
   const leastCards = document.getElementById("least-similar-cards");
+
+  if (!artistPicker || !albumPicker || !metricPicker || !selectedCard || !mostCards || !leastCards) return;
 
   function populateAlbumsForArtist(artistName, defaultAlbum) {
     albumPicker.innerHTML = "";
@@ -233,7 +225,13 @@ document.addEventListener("DOMContentLoaded", function() {
   // Initialize with Taylor Swift / folklore
   populateAlbumsForArtist("Taylor Swift", "folklore");
   updateDisplay();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initAlbumComparison);
+} else {
+  initAlbumComparison();
+}
 </script>
 ')
 ```

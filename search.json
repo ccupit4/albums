@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Album Covers",
+    "section": "",
+    "text": "This site showcases album covers and release information for Taylor Swift and Red Hot Chili Peppers, retrieved using the iTunes Search API."
+  },
+  {
+    "objectID": "index.html#taylor-swift",
+    "href": "index.html#taylor-swift",
+    "title": "Album Covers",
+    "section": "Taylor Swift",
+    "text": "Taylor Swift\n\n\n\n\nThe Life of a Showgirl\n\n\n2025-10-03\n\n\n\n\n\nTHE TORTURED POETS DEPARTMENT: THE ANTHOLOGY\n\n\n2024-04-19\n\n\n\n\n\nTHE TORTURED POETS DEPARTMENT\n\n\n2024-04-19\n\n\n\n\n\n1989 (Taylor’s Version) [Deluxe]\n\n\n2023-10-27\n\n\n\n\n\n1989 (Taylor’s Version)\n\n\n2023-10-27\n\n\n\n\n\nSpeak Now (Taylor’s Version)\n\n\n2023-07-07\n\n\n\n\n\nMidnights (3am Edition)\n\n\n2022-10-21\n\n\n\n\n\nMidnights\n\n\n2022-10-21"
+  },
+  {
+    "objectID": "index.html#red-hot-chili-peppers",
+    "href": "index.html#red-hot-chili-peppers",
+    "title": "Album Covers",
+    "section": "Red Hot Chili Peppers",
+    "text": "Red Hot Chili Peppers\n\n\n\n\nThe Getaway\n\n\n2016-06-17\n\n\n\n\n\nRock & Roll Hall of Fame Covers - EP\n\n\n2012-05-01\n\n\n\n\n\niTunes Originals: Red Hot Chili Peppers\n\n\n2006-09-12\n\n\n\n\n\nStadium Arcadium\n\n\n2006-05-09\n\n\n\n\n\nGreatest Hits\n\n\n2003-11-18\n\n\n\n\n\nThe Videos\n\n\n2003-11-18\n\n\n\n\n\nHigher Ground / If You Want Me To Stay - EP\n\n\n1992-01-01"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  }
+]

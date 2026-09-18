@@ -75,40 +75,37 @@ cat('<script type="application/json" id="album-similarity-data">')
 cat(json_payload)
 cat('</script>\n')
 
-# Render controls
+# Render two-tier controls
 cat('
 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin-bottom: 24px;">
-  <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end;">
-    <div style="flex: 1; min-width: 260px;">
-      <label for="album-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
-        Select an Album:
+  <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
+    <!-- Step 1: Pick Artist -->
+    <div style="flex: 1; min-width: 200px;">
+      <label for="artist-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
+        1. Pick an Artist:
       </label>
-      <select id="album-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem;">
-')
-
-ts_albums <- albums |> filter(artist == "Taylor Swift")
-cat('        <optgroup label="Taylor Swift">\n')
-for (i in seq_len(nrow(ts_albums))) {
-  sel <- if (ts_albums$clean_title[i] == "folklore") ' selected' else ''
-  cat(sprintf('          <option value="%s"%s>%s</option>\n', ts_albums$clean_title[i], sel, ts_albums$clean_title[i]))
-}
-cat('        </optgroup>\n')
-
-rhcp_albums <- albums |> filter(artist == "Red Hot Chili Peppers")
-cat('        <optgroup label="Red Hot Chili Peppers">\n')
-for (i in seq_len(nrow(rhcp_albums))) {
-  cat(sprintf('          <option value="%s">%s</option>\n', rhcp_albums$clean_title[i], rhcp_albums$clean_title[i]))
-}
-cat('        </optgroup>\n')
-
-cat('
+      <select id="artist-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
+        <option value="Taylor Swift" selected>Taylor Swift</option>
+        <option value="Red Hot Chili Peppers">Red Hot Chili Peppers</option>
       </select>
     </div>
-    <div style="width: 240px;">
-      <label for="metric-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
-        Compare By:
+
+    <!-- Step 2: Pick Album from Artist -->
+    <div style="flex: 1.5; min-width: 240px;">
+      <label for="album-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
+        2. Pick an Album:
       </label>
-      <select id="metric-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem;">
+      <select id="album-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
+        <!-- Populated dynamically by artist -->
+      </select>
+    </div>
+
+    <!-- Step 3: Pick Metric -->
+    <div style="width: 220px;">
+      <label for="metric-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
+        3. Compare By:
+      </label>
+      <select id="metric-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem; background: white;">
         <option value="overall" selected>Combined (Color & Design)</option>
         <option value="color">Color Palette Only</option>
         <option value="design">Spatial Design Only</option>
@@ -153,11 +150,26 @@ document.addEventListener("DOMContentLoaded", function() {
   if (!dataElement) return;
   const albumData = JSON.parse(dataElement.textContent);
 
+  const artistPicker = document.getElementById("artist-picker");
   const albumPicker = document.getElementById("album-picker");
   const metricPicker = document.getElementById("metric-picker");
   const selectedCard = document.getElementById("selected-card");
   const mostCards = document.getElementById("most-similar-cards");
   const leastCards = document.getElementById("least-similar-cards");
+
+  function populateAlbumsForArtist(artistName, defaultAlbum) {
+    albumPicker.innerHTML = "";
+    const list = Object.values(albumData).filter(a => a.artist === artistName);
+    list.forEach((album, idx) => {
+      const opt = document.createElement("option");
+      opt.value = album.title;
+      opt.textContent = album.title;
+      if (defaultAlbum ? album.title === defaultAlbum : idx === 0) {
+        opt.selected = true;
+      }
+      albumPicker.appendChild(opt);
+    });
+  }
 
   function renderCard(item, metric, isMatch) {
     let score = "";
@@ -193,7 +205,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const current = albumData[key];
     if (!current) return;
 
-    // Render left selected card
     selectedCard.innerHTML = `
       <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #3b82f6; letter-spacing: 0.05em; margin-bottom: 6px;">Selected Album</div>
       <img src="${current.img}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1;" alt="${current.title}"/>
@@ -204,7 +215,6 @@ document.addEventListener("DOMContentLoaded", function() {
       </div>
     `;
 
-    // Pick top and least lists based on metric
     const mostList = current[metric + "_most"] || current.overall_most;
     const leastList = current[metric + "_least"] || current.overall_least;
 
@@ -212,9 +222,16 @@ document.addEventListener("DOMContentLoaded", function() {
     leastCards.innerHTML = leastList.map(item => renderCard(item, metric, false)).join("");
   }
 
+  artistPicker.addEventListener("change", function() {
+    populateAlbumsForArtist(artistPicker.value);
+    updateDisplay();
+  });
+
   albumPicker.addEventListener("change", updateDisplay);
   metricPicker.addEventListener("change", updateDisplay);
 
+  // Initialize with Taylor Swift / folklore
+  populateAlbumsForArtist("Taylor Swift", "folklore");
   updateDisplay();
 });
 </script>

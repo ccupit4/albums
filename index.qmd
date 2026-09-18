@@ -1,0 +1,64 @@
+---
+title: "Album Covers"
+subtitle: "Exploring album artwork from Taylor Swift and Red Hot Chili Peppers"
+---
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+library(tidyverse)
+
+albums <- read_csv("albums.csv") |>
+  filter(trackCount > 5) |>
+  distinct(collectionName, .keep_all = TRUE)
+```
+
+This site showcases album covers and release information for **Taylor Swift** and **Red Hot Chili Peppers**, retrieved using the iTunes Search API.
+
+## Taylor Swift
+
+```{r}
+#| echo: false
+#| results: asis
+
+ts_albums <- albums |>
+  filter(artistName == "Taylor Swift") |>
+  slice_head(n = 8)
+
+cat('<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px;">\n')
+for (i in seq_len(nrow(ts_albums))) {
+  cat(paste0(
+    '<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">',
+    '<img src="', ts_albums$artworkUrl[i], '" style="width: 100%; border-radius: 4px;" alt="', htmltools::htmlEscape(ts_albums$collectionName[i]), '">',
+    '<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">', htmltools::htmlEscape(ts_albums$collectionName[i]), '</div>',
+    '<div style="color: #666; font-size: 0.8em;">', ts_albums$releaseDate[i], '</div>',
+    '</div>\n'
+  ))
+}
+cat('</div>\n\n')
+```
+
+## Red Hot Chili Peppers
+
+```{r}
+#| echo: false
+#| results: asis
+
+rhcp_albums <- albums |>
+  filter(artistName == "Red Hot Chili Peppers") |>
+  slice_head(n = 8)
+
+cat('<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px;">\n')
+for (i in seq_len(nrow(rhcp_albums))) {
+  cat(paste0(
+    '<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">',
+    '<img src="', rhcp_albums$artworkUrl[i], '" style="width: 100%; border-radius: 4px;" alt="', htmltools::htmlEscape(rhcp_albums$collectionName[i]), '">',
+    '<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">', htmltools::htmlEscape(rhcp_albums$collectionName[i]), '</div>',
+    '<div style="color: #666; font-size: 0.8em;">', rhcp_albums$releaseDate[i], '</div>',
+    '</div>\n'
+  ))
+}
+cat('</div>\n')
+```

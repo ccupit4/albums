@@ -1,64 +1,148 @@
 ---
-title: "Album Covers"
-subtitle: "Exploring album artwork from Taylor Swift and Red Hot Chili Peppers"
+title: "Album Cover Similarity Analysis"
+subtitle: "Comparing Taylor Swift and Red Hot Chili Peppers artwork by color and design"
+format:
+  html:
+    toc: true
+    code-fold: true
 ---
 
 ```{r}
-#| echo: false
+#| label: setup
 #| message: false
 #| warning: false
 
 library(tidyverse)
 
-albums <- read_csv("albums.csv") |>
-  filter(trackCount > 5) |>
-  distinct(collectionName, .keep_all = TRUE)
+# Load metadata and pairwise similarity metrics
+albums <- read_csv("album_metadata.csv", show_col_types = FALSE)
+pairs <- read_csv("album_similarity_pairs.csv", show_col_types = FALSE)
 ```
 
-This site showcases album covers and release information for **Taylor Swift** and **Red Hot Chili Peppers**, retrieved using the iTunes Search API.
+## How Similarity Is Measured
 
-## Taylor Swift
+Album covers were analyzed across two visual dimensions:
+
+1. **Color (HSV Palette):** Compares the distribution of hue, color saturation, and brightness across the image.
+2. **Design (Spatial Composition):** Compares the spatial layout, balance of light and dark regions, and structural composition.
+
+Scores range from **-1.0** (complete opposites) to **+1.0** (virtually identical).
+
+---
+
+## Most Similar Album Covers
+
+These pairs share matching color palettes, tone, and visual structure.
 
 ```{r}
-#| echo: false
+#| label: most-similar
 #| results: asis
+#| echo: false
 
-ts_albums <- albums |>
-  filter(artistName == "Taylor Swift") |>
-  slice_head(n = 8)
+top_similar <- pairs |>
+  filter(
+    (title1 == "folklore" & title2 == "evermore") |
+    (title1 == "I'm with You" & title2 == "Greatest Hits") |
+    (title1 == "evermore" & title2 == "reputation")
+  ) |>
+  slice_head(n = 3)
 
-cat('<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px;">\n')
-for (i in seq_len(nrow(ts_albums))) {
+for (i in seq_len(nrow(top_similar))) {
+  row <- top_similar[i, ]
   cat(paste0(
-    '<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">',
-    '<img src="', ts_albums$artworkUrl[i], '" style="width: 100%; border-radius: 4px;" alt="', htmltools::htmlEscape(ts_albums$collectionName[i]), '">',
-    '<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">', htmltools::htmlEscape(ts_albums$collectionName[i]), '</div>',
-    '<div style="color: #666; font-size: 0.8em;">', ts_albums$releaseDate[i], '</div>',
+    '<div style="background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">',
+    '<h4 style="margin-top: 0; color: #333;">', row$title1, ' (', row$artist1, ') vs. ', row$title2, ' (', row$artist2, ')</h4>',
+    '<p style="margin-bottom: 12px; font-weight: 500;">Overall Similarity: <strong>', round(row$similarity * 100, 1), '%</strong> | Color: ', round(row$color_sim * 100, 1), '% | Design: ', round(row$design_sim * 100, 1), '%</p>',
+    '<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">',
+    '<div style="text-align: center;"><img src="', row$img1, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$title1, '</div></div>',
+    '<div style="font-size: 1.5em; color: #888; font-weight: bold;">+</div>',
+    '<div style="text-align: center;"><img src="', row$img2, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$title2, '</div></div>',
+    '</div>',
     '</div>\n'
   ))
 }
-cat('</div>\n\n')
 ```
 
-## Red Hot Chili Peppers
+* **folklore & evermore:** Sister albums with almost identical woodland photography, desaturated sepia tones, and centered subject composition.
+* **I'm with You & Greatest Hits:** Minimalist white backgrounds with centered, high-contrast focal points.
+
+---
+
+## Least Similar Album Covers
+
+These pairs contrast drastically in both palette (vibrant psychedelic vs. stark monochrome) and design density.
 
 ```{r}
-#| echo: false
+#| label: least-similar
 #| results: asis
+#| echo: false
 
-rhcp_albums <- albums |>
-  filter(artistName == "Red Hot Chili Peppers") |>
-  slice_head(n = 8)
+least_similar <- pairs |>
+  filter(
+    (title1 == "I'm with You" & title2 == "Return of the Dream Canteen") |
+    (title1 == "Lover" & str_detect(title2, "TORTURED POETS")) |
+    (title1 == "Fearless" & title2 == "By the Way")
+  ) |>
+  slice_head(n = 3)
 
-cat('<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px;">\n')
-for (i in seq_len(nrow(rhcp_albums))) {
+for (i in seq_len(nrow(least_similar))) {
+  row <- least_similar[i, ]
   cat(paste0(
-    '<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">',
-    '<img src="', rhcp_albums$artworkUrl[i], '" style="width: 100%; border-radius: 4px;" alt="', htmltools::htmlEscape(rhcp_albums$collectionName[i]), '">',
-    '<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">', htmltools::htmlEscape(rhcp_albums$collectionName[i]), '</div>',
-    '<div style="color: #666; font-size: 0.8em;">', rhcp_albums$releaseDate[i], '</div>',
+    '<div style="background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">',
+    '<h4 style="margin-top: 0; color: #333;">', row$title1, ' (', row$artist1, ') vs. ', row$title2, ' (', row$artist2, ')</h4>',
+    '<p style="margin-bottom: 12px; font-weight: 500;">Overall Similarity: <strong>', round(row$similarity * 100, 1), '%</strong> | Color: ', round(row$color_sim * 100, 1), '% | Design: ', round(row$design_sim * 100, 1), '%</p>',
+    '<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">',
+    '<div style="text-align: center;"><img src="', row$img1, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$title1, '</div></div>',
+    '<div style="font-size: 1.5em; color: #888; font-weight: bold;">≠</div>',
+    '<div style="text-align: center;"><img src="', row$img2, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$title2, '</div></div>',
+    '</div>',
     '</div>\n'
   ))
 }
-cat('</div>\n')
+```
+
+* **I'm with You vs. Return of the Dream Canteen:** Extreme contrast between Damien Hirst's clinical white pill aesthetic and complex, neon psychedelic surrealism.
+* **Lover vs. The Tortured Poets Department:** Bright pastel pinks, baby blues, and dreamy glitter juxtaposed against stark, desaturated grayscale intimacy.
+
+---
+
+## Cross-Artist Comparison
+
+Which album from Taylor Swift is most visually akin to a Red Hot Chili Peppers album?
+
+```{r}
+#| label: cross-artist
+#| results: asis
+#| echo: false
+
+cross_top <- pairs |>
+  filter(!same_artist) |>
+  slice_head(n = 1)
+
+row <- cross_top[1, ]
+cat(paste0(
+  '<div style="background: #f0f7ff; border: 1px solid #cce3ff; border-radius: 10px; padding: 18px; margin-bottom: 24px;">',
+  '<h4 style="margin-top: 0; color: #004494;">Closest Match Across Artists: ', row$title1, ' & ', row$title2, '</h4>',
+  '<p style="margin-bottom: 12px;">Similarity: <strong>', round(row$similarity * 100, 1), '%</strong> (Color: ', round(row$color_sim * 100, 1), '%, Design: ', round(row$design_sim * 100, 1), '%)</p>',
+  '<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">',
+  '<div style="text-align: center;"><img src="', row$img1, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$artist1, ' - ', row$title1, '</div></div>',
+  '<div style="font-size: 1.5em; color: #004494; font-weight: bold;">~</div>',
+  '<div style="text-align: center;"><img src="', row$img2, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$artist2, ' - ', row$title2, '</div></div>',
+  '</div>',
+  '<p style="margin-top: 14px; font-size: 0.95em; color: #333;">Both covers feature neutral, muted palettes with central figures framed against soft, earthy backdrops.</p>',
+  '</div>\n'
+))
+```
+
+---
+
+## All Analyzed Albums
+
+```{r}
+#| label: table
+#| echo: false
+
+albums |>
+  select(Artist = artist, Album = clean_title, `Release Date` = release_date) |>
+  knitr::kable()
 ```

@@ -1,6 +1,6 @@
 ---
 title: "Album Cover Similarity Analysis"
-subtitle: "Comparing Taylor Swift and Red Hot Chili Peppers artwork by color and design"
+subtitle: "Interactive visual comparison tool for Taylor Swift and Red Hot Chili Peppers"
 format:
   html:
     toc: true
@@ -11,132 +11,214 @@ format:
 #| label: setup
 #| message: false
 #| warning: false
+#| echo: false
 
 library(tidyverse)
+library(jsonlite)
 
-# Load metadata and pairwise similarity metrics
 albums <- read_csv("album_metadata.csv", show_col_types = FALSE)
 pairs <- read_csv("album_similarity_pairs.csv", show_col_types = FALSE)
+
+# Build symmetrical pairwise relationships
+pairs_sym <- bind_rows(
+  pairs |> transmute(target = title1, other_title = title2, other_artist = artist2, other_img = img2, similarity, color_sim, design_sim),
+  pairs |> transmute(target = title2, other_title = title1, other_artist = artist1, other_img = img1, similarity, color_sim, design_sim)
+)
+
+album_data <- list()
+for (i in seq_len(nrow(albums))) {
+  t <- albums$clean_title[i]
+  rel <- pairs_sym |> filter(target == t)
+  album_data[[t]] <- list(
+    title = t,
+    artist = albums$artist[i],
+    img = albums$image_path[i],
+    overall_most = rel |> arrange(desc(similarity)) |> slice_head(n = 3),
+    overall_least = rel |> arrange(similarity) |> slice_head(n = 3),
+    color_most = rel |> arrange(desc(color_sim)) |> slice_head(n = 3),
+    color_least = rel |> arrange(color_sim) |> slice_head(n = 3),
+    design_most = rel |> arrange(desc(design_sim)) |> slice_head(n = 3),
+    design_least = rel |> arrange(design_sim) |> slice_head(n = 3)
+  )
+}
+
+json_payload <- toJSON(album_data, auto_unbox = TRUE)
 ```
 
 ## How Similarity Is Measured
 
-Album covers were analyzed across two visual dimensions:
+Album covers are compared across two complementary visual dimensions:
 
-1. **Color (HSV Palette):** Compares the distribution of hue, color saturation, and brightness across the image.
-2. **Design (Spatial Composition):** Compares the spatial layout, balance of light and dark regions, and structural composition.
+1. **Color (HSV Palette):** Compares distribution of hue, color saturation, and brightness.
+2. **Design (Spatial Composition):** Compares spatial layout, lighting balance, and structural shapes.
 
 Scores range from **-1.0** (complete opposites) to **+1.0** (virtually identical).
 
 ::: {.callout-tip}
-### Explore More Data
-Browse the newly added [**1,000 Pop Albums Catalog**](pop-albums.qmd) featuring searchable releases and cover artwork thumbnails.
+### Explore 1,000 Pop Albums
+Looking for more? Browse the [**1,000 Pop Albums Catalog**](pop-albums.qmd) with interactive search, filters, and cover art thumbnails.
 :::
 
 ---
 
-## Most Similar Album Covers
+## Interactive Album Comparison Tool
 
-These pairs share matching color palettes, tone, and visual structure.
+Pick any album below to instantly inspect its **most similar** and **least similar** matches.
 
 ```{r}
-#| label: most-similar
+#| label: interactive-ui
 #| results: asis
 #| echo: false
 
-top_similar <- pairs |>
-  filter(
-    (title1 == "folklore" & title2 == "evermore") |
-    (title1 == "I'm with You" & title2 == "Greatest Hits") |
-    (title1 == "evermore" & title2 == "reputation")
-  ) |>
-  slice_head(n = 3)
+# Safely output JSON
+cat('<script type="application/json" id="album-similarity-data">')
+cat(json_payload)
+cat('</script>\n')
 
-for (i in seq_len(nrow(top_similar))) {
-  row <- top_similar[i, ]
-  cat(paste0(
-    '<div style="background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">',
-    '<h4 style="margin-top: 0; color: #333;">', row$title1, ' (', row$artist1, ') vs. ', row$title2, ' (', row$artist2, ')</h4>',
-    '<p style="margin-bottom: 12px; font-weight: 500;">Overall Similarity: <strong>', round(row$similarity * 100, 1), '%</strong> | Color: ', round(row$color_sim * 100, 1), '% | Design: ', round(row$design_sim * 100, 1), '%</p>',
-    '<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">',
-    '<div style="text-align: center;"><img src="', row$img1, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$title1, '</div></div>',
-    '<div style="font-size: 1.5em; color: #888; font-weight: bold;">+</div>',
-    '<div style="text-align: center;"><img src="', row$img2, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$title2, '</div></div>',
-    '</div>',
-    '</div>\n'
-  ))
+# Render controls
+cat('
+<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin-bottom: 24px;">
+  <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end;">
+    <div style="flex: 1; min-width: 260px;">
+      <label for="album-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
+        Select an Album:
+      </label>
+      <select id="album-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem;">
+')
+
+ts_albums <- albums |> filter(artist == "Taylor Swift")
+cat('        <optgroup label="Taylor Swift">\n')
+for (i in seq_len(nrow(ts_albums))) {
+  sel <- if (ts_albums$clean_title[i] == "folklore") ' selected' else ''
+  cat(sprintf('          <option value="%s"%s>%s</option>\n', ts_albums$clean_title[i], sel, ts_albums$clean_title[i]))
 }
-```
+cat('        </optgroup>\n')
 
-* **folklore & evermore:** Sister albums with almost identical woodland photography, desaturated sepia tones, and centered subject composition.
-* **I'm with You & Greatest Hits:** Minimalist white backgrounds with centered, high-contrast focal points.
-
----
-
-## Least Similar Album Covers
-
-These pairs contrast drastically in both palette (vibrant psychedelic vs. stark monochrome) and design density.
-
-```{r}
-#| label: least-similar
-#| results: asis
-#| echo: false
-
-least_similar <- pairs |>
-  filter(
-    (title1 == "I'm with You" & title2 == "Return of the Dream Canteen") |
-    (title1 == "Lover" & str_detect(title2, "TORTURED POETS")) |
-    (title1 == "Fearless" & title2 == "By the Way")
-  ) |>
-  slice_head(n = 3)
-
-for (i in seq_len(nrow(least_similar))) {
-  row <- least_similar[i, ]
-  cat(paste0(
-    '<div style="background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">',
-    '<h4 style="margin-top: 0; color: #333;">', row$title1, ' (', row$artist1, ') vs. ', row$title2, ' (', row$artist2, ')</h4>',
-    '<p style="margin-bottom: 12px; font-weight: 500;">Overall Similarity: <strong>', round(row$similarity * 100, 1), '%</strong> | Color: ', round(row$color_sim * 100, 1), '% | Design: ', round(row$design_sim * 100, 1), '%</p>',
-    '<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">',
-    '<div style="text-align: center;"><img src="', row$img1, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$title1, '</div></div>',
-    '<div style="font-size: 1.5em; color: #888; font-weight: bold;">≠</div>',
-    '<div style="text-align: center;"><img src="', row$img2, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$title2, '</div></div>',
-    '</div>',
-    '</div>\n'
-  ))
+rhcp_albums <- albums |> filter(artist == "Red Hot Chili Peppers")
+cat('        <optgroup label="Red Hot Chili Peppers">\n')
+for (i in seq_len(nrow(rhcp_albums))) {
+  cat(sprintf('          <option value="%s">%s</option>\n', rhcp_albums$clean_title[i], rhcp_albums$clean_title[i]))
 }
-```
+cat('        </optgroup>\n')
 
-* **I'm with You vs. Return of the Dream Canteen:** Extreme contrast between Damien Hirst's clinical white pill aesthetic and complex, neon psychedelic surrealism.
-* **Lover vs. The Tortured Poets Department:** Bright pastel pinks, baby blues, and dreamy glitter juxtaposed against stark, desaturated grayscale intimacy.
+cat('
+      </select>
+    </div>
+    <div style="width: 240px;">
+      <label for="metric-picker" style="font-weight: 600; display: block; margin-bottom: 6px; color: #1e293b;">
+        Compare By:
+      </label>
+      <select id="metric-picker" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1rem;">
+        <option value="overall" selected>Combined (Color & Design)</option>
+        <option value="color">Color Palette Only</option>
+        <option value="design">Spatial Design Only</option>
+      </select>
+    </div>
+  </div>
+</div>
 
----
+<div id="comparison-display" style="display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start;">
+  <!-- Left column: Chosen album -->
+  <div id="selected-card" style="background: #ffffff; border: 2px solid #3b82f6; border-radius: 10px; padding: 18px; text-align: center; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);">
+    <!-- Injected by JS -->
+  </div>
 
-## Cross-Artist Comparison
+  <!-- Right column: Most & Least Similar lists -->
+  <div style="display: flex; flex-direction: column; gap: 20px;">
+    <!-- Most Similar -->
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px;">
+      <h4 style="margin-top: 0; margin-bottom: 12px; color: #166534; display: flex; align-items: center; gap: 8px;">
+        <span>🟢</span> Most Similar Album Covers
+      </h4>
+      <div id="most-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;">
+        <!-- Injected by JS -->
+      </div>
+    </div>
 
-Which album from Taylor Swift is most visually akin to a Red Hot Chili Peppers album?
+    <!-- Least Similar -->
+    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px;">
+      <h4 style="margin-top: 0; margin-bottom: 12px; color: #991b1b; display: flex; align-items: center; gap: 8px;">
+        <span>🔴</span> Least Similar Album Covers
+      </h4>
+      <div id="least-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </div>
+</div>
 
-```{r}
-#| label: cross-artist
-#| results: asis
-#| echo: false
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const dataElement = document.getElementById("album-similarity-data");
+  if (!dataElement) return;
+  const albumData = JSON.parse(dataElement.textContent);
 
-cross_top <- pairs |>
-  filter(!same_artist) |>
-  slice_head(n = 1)
+  const albumPicker = document.getElementById("album-picker");
+  const metricPicker = document.getElementById("metric-picker");
+  const selectedCard = document.getElementById("selected-card");
+  const mostCards = document.getElementById("most-similar-cards");
+  const leastCards = document.getElementById("least-similar-cards");
 
-row <- cross_top[1, ]
-cat(paste0(
-  '<div style="background: #f0f7ff; border: 1px solid #cce3ff; border-radius: 10px; padding: 18px; margin-bottom: 24px;">',
-  '<h4 style="margin-top: 0; color: #004494;">Closest Match Across Artists: ', row$title1, ' & ', row$title2, '</h4>',
-  '<p style="margin-bottom: 12px;">Similarity: <strong>', round(row$similarity * 100, 1), '%</strong> (Color: ', round(row$color_sim * 100, 1), '%, Design: ', round(row$design_sim * 100, 1), '%)</p>',
-  '<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">',
-  '<div style="text-align: center;"><img src="', row$img1, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$artist1, ' - ', row$title1, '</div></div>',
-  '<div style="font-size: 1.5em; color: #004494; font-weight: bold;">~</div>',
-  '<div style="text-align: center;"><img src="', row$img2, '" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" /><div style="font-size: 0.85em; margin-top: 4px;">', row$artist2, ' - ', row$title2, '</div></div>',
-  '</div>',
-  '<p style="margin-top: 14px; font-size: 0.95em; color: #333;">Both covers feature neutral, muted palettes with central figures framed against soft, earthy backdrops.</p>',
-  '</div>\n'
-))
+  function renderCard(item, metric, isMatch) {
+    let score = "";
+    if (metric === "color") {
+      score = `Color: ${(item.color_sim * 100).toFixed(1)}%`;
+    } else if (metric === "design") {
+      score = `Design: ${(item.design_sim * 100).toFixed(1)}%`;
+    } else {
+      score = `Match: ${(item.similarity * 100).toFixed(1)}%`;
+    }
+
+    const badgeBg = isMatch ? "#dcfce7" : "#fee2e2";
+    const badgeColor = isMatch ? "#15803d" : "#b91c1c";
+
+    return `
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <img src="${item.other_img}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 4px; border: 1px solid #e2e8f0;" alt="${item.other_title}"/>
+        <div style="font-weight: 600; font-size: 0.85rem; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.other_title}">${item.other_title}</div>
+        <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 6px;">${item.other_artist}</div>
+        <div style="display: inline-block; background: ${badgeBg}; color: ${badgeColor}; font-weight: 600; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;">
+          ${score}
+        </div>
+        <div style="font-size: 0.68rem; color: #94a3b8; margin-top: 4px;">
+          Color: ${(item.color_sim * 100).toFixed(0)}% | Design: ${(item.design_sim * 100).toFixed(0)}%
+        </div>
+      </div>
+    `;
+  }
+
+  function updateDisplay() {
+    const key = albumPicker.value;
+    const metric = metricPicker.value;
+    const current = albumData[key];
+    if (!current) return;
+
+    // Render left selected card
+    selectedCard.innerHTML = `
+      <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #3b82f6; letter-spacing: 0.05em; margin-bottom: 6px;">Selected Album</div>
+      <img src="${current.img}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1;" alt="${current.title}"/>
+      <h3 style="margin: 12px 0 4px 0; font-size: 1.15rem; color: #0f172a;">${current.title}</h3>
+      <div style="font-size: 0.9rem; color: #64748b; font-weight: 500;">${current.artist}</div>
+      <div style="margin-top: 10px; font-size: 0.75rem; color: #475569; background: #eff6ff; padding: 6px; border-radius: 6px;">
+        Comparing against all other albums by <strong>${metric === "color" ? "Color Palette" : metric === "design" ? "Spatial Design" : "Color & Design"}</strong>.
+      </div>
+    `;
+
+    // Pick top and least lists based on metric
+    const mostList = current[metric + "_most"] || current.overall_most;
+    const leastList = current[metric + "_least"] || current.overall_least;
+
+    mostCards.innerHTML = mostList.map(item => renderCard(item, metric, true)).join("");
+    leastCards.innerHTML = leastList.map(item => renderCard(item, metric, false)).join("");
+  }
+
+  albumPicker.addEventListener("change", updateDisplay);
+  metricPicker.addEventListener("change", updateDisplay);
+
+  updateDisplay();
+});
+</script>
+')
 ```
 
 ---

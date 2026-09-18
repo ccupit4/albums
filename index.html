@@ -291,10 +291,39 @@ ul.task-list li input[type="checkbox"] {
   /* Inspector Section Styles */
   .inspector-panel {
     background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
     padding: 24px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    margin-top: 10px;
+  }
+  .inspector-opponent-bar {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin-bottom: 20px;
+  }
+  .btn-quick-opponent {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.15s;
+    height: 36px;
+  }
+  .btn-quick-opponent:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+    color: #0f172a;
   }
   .meter-bar-container {
     background: #f1f5f9;
@@ -307,6 +336,41 @@ ul.task-list li input[type="checkbox"] {
     height: 100%;
     border-radius: 999px;
     transition: width 0.4s ease;
+  }
+  .blend-tab {
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: white;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .blend-tab.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+  .harmony-swatch {
+    flex: 1;
+    height: 28px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    transition: transform 0.15s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-family: monospace;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  }
+  .harmony-swatch:hover {
+    transform: scale(1.06);
+    z-index: 2;
   }
 </style>
 
@@ -424,22 +488,132 @@ ul.task-list li input[type="checkbox"] {
   </div>
 </div>
 
-<!-- Cool New Feature: Side-by-Side Visual Match Inspector -->
+<!-- Head-to-Head Visual Inspector & Combined Cover Mashup Studio -->
 <div class="inspector-panel">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px; flex-wrap: wrap; gap: 12px;">
     <div>
-      <h3 style="margin: 0; font-size: 1.2rem; color: #0f172a; display: flex; align-items: center; gap: 8px;" class="anchored">
-        <span>🔬</span> Head-to-Head Visual Inspector
+      <h3 style="margin: 0; font-size: 1.25rem; color: #0f172a; display: flex; align-items: center; gap: 8px;" class="anchored">
+        <span>🔬</span> Head-to-Head Visual Inspector &amp; Cover Combiner
       </h3>
-      <span style="font-size: 0.8rem; color: #64748b;">Direct visual feature comparison between the Selected Album and its #1 Top Match</span>
+      <span style="font-size: 0.82rem; color: #64748b;">Compare any two albums, blend and mashup their artwork, and inspect exact visual metrics.</span>
     </div>
-    <span id="inspector-overall-badge" style="font-size: 0.95rem; font-weight: 700; background: #dcfce7; color: #15803d; padding: 6px 14px; border-radius: 20px;">
-      98.2% Similarity
+    <span id="inspector-verdict-badge" style="font-size: 0.95rem; font-weight: 700; background: #dcfce7; color: #15803d; padding: 6px 16px; border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+      98.2% Match: Visual Twins!
     </span>
   </div>
 
-  <div id="inspector-content" style="display: grid; grid-template-columns: 140px 1fr 140px; gap: 24px; align-items: center;">
-    <!-- Filled dynamically by JavaScript -->
+  <!-- Opponent Pickers Toolbar -->
+  <div class="inspector-opponent-bar">
+    <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #1e293b; align-self: center; margin-right: 4px;">
+      Compare With (Album B):
+    </div>
+    <div style="flex: 1; min-width: 130px;">
+      <select id="opponent-genre" class="toolbar-select" style="width: 100%; height: 36px; padding: 6px 10px; font-size: 0.85rem;">
+        <option value="all">All Genres</option>
+        <option value="Pop">Pop</option>
+        <option value="Rock">Rock</option>
+        <option value="Hip-Hop">Hip-Hop</option>
+        <option value="R&amp;B / Soul">R&amp;B / Soul</option>
+        <option value="Country">Country</option>
+        <option value="Electronic">Electronic</option>
+        <option value="Latin">Latin</option>
+        <option value="Jazz">Jazz</option>
+      </select>
+    </div>
+    <div style="flex: 1.3; min-width: 170px;">
+      <select id="opponent-artist" class="toolbar-select" style="width: 100%; height: 36px; padding: 6px 10px; font-size: 0.85rem;">
+      </select>
+    </div>
+    <div style="flex: 1.8; min-width: 200px;">
+      <select id="opponent-album" class="toolbar-select" style="width: 100%; height: 36px; padding: 6px 10px; font-size: 0.85rem;">
+      </select>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button id="btn-use-top" class="btn-quick-opponent" title="Set to #1 Most Similar Match">⚡ #1 Match</button>
+      <button id="btn-use-least" class="btn-quick-opponent" title="Set to Least Similar Match">⚡ Least Similar</button>
+      <button id="btn-random-opponent" class="btn-quick-opponent" title="Pick a Random Opponent Album">⚔️ Random Opponent</button>
+    </div>
+  </div>
+
+  <!-- 3-Way Showcase: Album A, Combined Artwork Studio, Album B -->
+  <div style="display: grid; grid-template-columns: 200px 1fr 200px; gap: 24px; align-items: center; margin-bottom: 24px;">
+    <!-- Album A Card -->
+    <div id="inspector-card-a" style="text-align: center; background: #f8fafc; border: 2px solid #3b82f6; border-radius: 12px; padding: 14px;">
+    </div>
+
+    <!-- Center: Combined Artwork Studio -->
+    <div style="text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #475569; letter-spacing: 0.05em;">Combined Cover Art Mashup</span>
+        <!-- Blend Mode Tabs -->
+        <div style="display: flex; gap: 4px;">
+          <button class="blend-tab active" data-mode="crossfade" title="Smoothly cross-fade Album A and B">🔀 Blend</button>
+          <button class="blend-tab" data-mode="split" title="Split-screen half Album A and half Album B">🌓 Split</button>
+          <button class="blend-tab" data-mode="difference" title="Subtract colors to reveal design differences">🔍 Difference</button>
+          <button class="blend-tab" data-mode="screen" title="Double exposure light fusion">✨ Exposure</button>
+        </div>
+      </div>
+
+      <!-- Combined Image Frame -->
+      <div style="position: relative; width: 220px; height: 220px; margin: 0 auto; border-radius: 10px; overflow: hidden; border: 2px solid #6366f1; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);">
+        <img id="blend-img-a" src="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Base A">
+        <img id="blend-img-b" src="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.5;" alt="Overlay B">
+        <div id="blend-split-line" style="display: none; position: absolute; top: 0; bottom: 0; width: 2px; background: #ffffff; box-shadow: 0 0 4px rgba(0,0,0,0.6); pointer-events: none;"></div>
+      </div>
+
+      <!-- Blend Ratio Slider -->
+      <div style="margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; max-width: 320px; margin-left: auto; margin-right: auto;">
+        <span style="font-size: 0.72rem; font-weight: 700; color: #2563eb;">Album A</span>
+        <input type="range" id="blend-slider" min="0" max="100" value="50" style="flex: 1; accent-color: #6366f1; cursor: pointer;">
+        <span style="font-size: 0.72rem; font-weight: 700; color: #10b981;">Album B</span>
+      </div>
+
+      <!-- Cool New Feature: Hybrid Harmony Color Palette -->
+      <div style="margin-top: 14px; border-top: 1px dashed #e2e8f0; padding-top: 10px;">
+        <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 6px;">
+          🎨 Hybrid Harmony Palette (Blended Color Spectrum)
+        </div>
+        <div id="harmony-palette-strip" style="display: flex; gap: 6px;">
+          <!-- 5 interpolated color swatches filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Album B Card -->
+    <div id="inspector-card-b" style="text-align: center; background: #f8fafc; border: 2px solid #10b981; border-radius: 12px; padding: 14px;">
+    </div>
+  </div>
+
+  <!-- Detailed Metric Agreement Bars -->
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 14px;">
+      <!-- Color Agreement -->
+      <div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #1e293b;">
+          <span>Color Palette Similarity</span>
+          <span id="meter-color-val" style="color: #2563eb; font-weight: 700;">--%</span>
+        </div>
+        <div class="meter-bar-container">
+          <div id="meter-color-fill" class="meter-bar-fill" style="width: 0%; background: linear-gradient(90deg, #3b82f6, #6366f1);"></div>
+        </div>
+      </div>
+
+      <!-- Design Agreement -->
+      <div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #1e293b;">
+          <span>Composition &amp; Design Similarity</span>
+          <span id="meter-design-val" style="color: #059669; font-weight: 700;">--%</span>
+        </div>
+        <div class="meter-bar-container">
+          <div id="meter-design-fill" class="meter-bar-fill" style="width: 0%; background: linear-gradient(90deg, #10b981, #059669);"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Numbers Grid -->
+    <div id="inspector-stat-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center; font-size: 0.78rem;">
+      <!-- Filled by JS -->
+    </div>
   </div>
 </div>
 
@@ -449,6 +623,7 @@ function initAlbumComparison() {
   if (!dataElement) return;
   const albumData = JSON.parse(dataElement.textContent);
 
+  // Main UI elements
   const searchInput = document.getElementById("search-input");
   const albumDatalist = document.getElementById("album-datalist");
   const genrePicker = document.getElementById("genre-picker");
@@ -462,11 +637,38 @@ function initAlbumComparison() {
   const mostCards = document.getElementById("most-similar-cards");
   const leastCards = document.getElementById("least-similar-cards");
   const matchPoolLabel = document.getElementById("match-pool-label");
-  const inspectorContent = document.getElementById("inspector-content");
-  const inspectorBadge = document.getElementById("inspector-overall-badge");
   const palettePills = document.querySelectorAll(".palette-pill");
 
+  // Inspector Opponent elements
+  const oppGenre = document.getElementById("opponent-genre");
+  const oppArtist = document.getElementById("opponent-artist");
+  const oppAlbum = document.getElementById("opponent-album");
+  const btnUseTop = document.getElementById("btn-use-top");
+  const btnUseLeast = document.getElementById("btn-use-least");
+  const btnRandomOpp = document.getElementById("btn-random-opponent");
+
+  // Inspector Display elements
+  const inspectorVerdictBadge = document.getElementById("inspector-verdict-badge");
+  const inspectorCardA = document.getElementById("inspector-card-a");
+  const inspectorCardB = document.getElementById("inspector-card-b");
+  const blendImgA = document.getElementById("blend-img-a");
+  const blendImgB = document.getElementById("blend-img-b");
+  const blendSplitLine = document.getElementById("blend-split-line");
+  const blendSlider = document.getElementById("blend-slider");
+  const blendTabs = document.querySelectorAll(".blend-tab");
+  const harmonyPaletteStrip = document.getElementById("harmony-palette-strip");
+  const meterColorFill = document.getElementById("meter-color-fill");
+  const meterColorVal = document.getElementById("meter-color-val");
+  const meterDesignFill = document.getElementById("meter-design-fill");
+  const meterDesignVal = document.getElementById("meter-design-val");
+  const inspectorStatGrid = document.getElementById("inspector-stat-grid");
+
   let activePaletteFilter = "all";
+  let activeBlendMode = "crossfade";
+  let currentTarget = null;
+  let currentOpponent = null;
+  let latestMostMatches = [];
+  let latestLeastMatches = [];
 
   // Populate search datalist
   if (albumDatalist) {
@@ -531,6 +733,34 @@ function initAlbumComparison() {
     });
   }
 
+  // Populate Opponent pickers (Album B)
+  function populateOpponentArtists(genre, defaultArtist) {
+    oppArtist.innerHTML = "";
+    let pool = albumData;
+    if (genre && genre !== "all") pool = pool.filter(a => a.genre === genre);
+    const artists = Array.from(new Set(pool.map(a => a.artist))).sort((a, b) => a.localeCompare(b));
+    
+    artists.forEach((name, idx) => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      if (defaultArtist ? name === defaultArtist : idx === 0) opt.selected = true;
+      oppArtist.appendChild(opt);
+    });
+  }
+
+  function populateOpponentAlbums(artistName, defaultAlbum) {
+    oppAlbum.innerHTML = "";
+    const list = albumData.filter(a => a.artist === artistName);
+    list.forEach((item, idx) => {
+      const opt = document.createElement("option");
+      opt.value = item.album;
+      opt.textContent = item.album;
+      if (defaultAlbum ? item.album === defaultAlbum : idx === 0) opt.selected = true;
+      oppAlbum.appendChild(opt);
+    });
+  }
+
   function selectAlbumByName(artistName, albumName) {
     const item = albumData.find(a => a.artist === artistName && a.album === albumName);
     if (item && genrePicker.value !== "all" && item.genre !== genrePicker.value) {
@@ -541,6 +771,191 @@ function initAlbumComparison() {
     populateAlbumsForArtist(artistName, albumName);
     albumPicker.value = albumName;
     updateDisplay();
+  }
+
+  function selectOpponentByName(artistName, albumName) {
+    const item = albumData.find(a => a.artist === artistName && a.album === albumName);
+    if (!item) return;
+    if (oppGenre.value !== "all" && item.genre !== oppGenre.value) {
+      oppGenre.value = "all";
+    }
+    populateOpponentArtists(oppGenre.value, artistName);
+    oppArtist.value = artistName;
+    populateOpponentAlbums(artistName, albumName);
+    oppAlbum.value = albumName;
+    currentOpponent = item;
+    renderInspector();
+  }
+
+  // Color Interpolation for Hybrid Harmony Palette
+  function interpolateHex(hex1, hex2, factor) {
+    const clean1 = hex1.replace("#", "");
+    const clean2 = hex2.replace("#", "");
+    const r1 = parseInt(clean1.substring(0, 2), 16);
+    const g1 = parseInt(clean1.substring(2, 4), 16);
+    const b1 = parseInt(clean1.substring(4, 6), 16);
+    const r2 = parseInt(clean2.substring(0, 2), 16);
+    const g2 = parseInt(clean2.substring(2, 4), 16);
+    const b2 = parseInt(clean2.substring(4, 6), 16);
+
+    const r = Math.round(r1 + factor * (r2 - r1));
+    const g = Math.round(g1 + factor * (g2 - g1));
+    const b = Math.round(b1 + factor * (b2 - b1));
+
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+
+  function computePairwiseSimilarity(a, b) {
+    const dColor = Math.sqrt(
+      Math.pow(a.r - b.r, 2) +
+      Math.pow(a.g - b.g, 2) +
+      Math.pow(a.b - b.b, 2) +
+      Math.pow(a.sat - b.sat, 2)
+    ) / 2.0;
+    const colorSim = Math.max(0, 1 - dColor);
+
+    const dDesign = Math.sqrt(
+      Math.pow(a.bright - b.bright, 2) +
+      Math.pow(a.contrast - b.contrast, 2)
+    ) / 1.414;
+    const designSim = Math.max(0, 1 - dDesign);
+
+    const overallSim = 0.5 * colorSim + 0.5 * designSim;
+    return { colorSim, designSim, overallSim };
+  }
+
+  function updateBlendVisuals() {
+    if (!blendImgA || !blendImgB || !blendSlider) return;
+    const val = parseInt(blendSlider.value, 10);
+
+    if (activeBlendMode === "crossfade") {
+      blendImgB.style.opacity = (val / 100).toString();
+      blendImgB.style.mixBlendMode = "normal";
+      blendImgB.style.clipPath = "none";
+      if (blendSplitLine) blendSplitLine.style.display = "none";
+    } else if (activeBlendMode === "split") {
+      blendImgB.style.opacity = "1";
+      blendImgB.style.mixBlendMode = "normal";
+      blendImgB.style.clipPath = `polygon(${val}% 0, 100% 0, 100% 100%, ${val}% 100%)`;
+      if (blendSplitLine) {
+        blendSplitLine.style.display = "block";
+        blendSplitLine.style.left = `${val}%`;
+      }
+    } else if (activeBlendMode === "difference") {
+      blendImgB.style.opacity = "1";
+      blendImgB.style.mixBlendMode = "difference";
+      blendImgB.style.clipPath = "none";
+      if (blendSplitLine) blendSplitLine.style.display = "none";
+    } else if (activeBlendMode === "screen") {
+      blendImgB.style.opacity = "0.8";
+      blendImgB.style.mixBlendMode = "screen";
+      blendImgB.style.clipPath = "none";
+      if (blendSplitLine) blendSplitLine.style.display = "none";
+    }
+  }
+
+  function renderInspector() {
+    if (!currentTarget || !currentOpponent) return;
+    const target = currentTarget;
+    const opp = currentOpponent;
+
+    const stats = computePairwiseSimilarity(target, opp);
+    const overallPct = (stats.overallSim * 100).toFixed(1);
+    const colorPct = (stats.colorSim * 100).toFixed(1);
+    const designPct = (stats.designSim * 100).toFixed(1);
+
+    // Dynamic verdict label
+    if (inspectorVerdictBadge) {
+      if (stats.overallSim >= 0.88) {
+        inspectorVerdictBadge.textContent = `🔥 ${overallPct}% Match: Visual Twins!`;
+        inspectorVerdictBadge.style.background = "#dcfce7";
+        inspectorVerdictBadge.style.color = "#15803d";
+      } else if (stats.overallSim >= 0.70) {
+        inspectorVerdictBadge.textContent = `✨ ${overallPct}% Match: Stylistic Kin!`;
+        inspectorVerdictBadge.style.background = "#e0f2fe";
+        inspectorVerdictBadge.style.color = "#0369a1";
+      } else if (stats.overallSim >= 0.50) {
+        inspectorVerdictBadge.textContent = `⚡ ${overallPct}% Match: Mild Contrast!`;
+        inspectorVerdictBadge.style.background = "#fef9c3";
+        inspectorVerdictBadge.style.color = "#854d0e";
+      } else {
+        inspectorVerdictBadge.textContent = `🧊 ${overallPct}% Match: Polar Opposites!`;
+        inspectorVerdictBadge.style.background = "#fee2e2";
+        inspectorVerdictBadge.style.color = "#b91c1c";
+      }
+    }
+
+    // Card A
+    inspectorCardA.innerHTML = `
+      <div style="font-size: 0.72rem; font-weight: 800; color: #2563eb; text-transform: uppercase; margin-bottom: 6px;">Album A</div>
+      <img src="${target.cover}" onerror="this.onerror=null;this.src='${target.thumb}'" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.08);" alt="${target.album}"/>
+      <div style="font-weight: 700; font-size: 0.86rem; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #0f172a;" title="${target.album}">${target.album}</div>
+      <div style="font-size: 0.75rem; color: #64748b;">${target.artist} (${target.year})</div>
+      <div style="margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #e2e8f0; padding: 2px 8px; border-radius: 12px; font-size: 0.72rem;">
+        <span style="width:12px; height:12px; border-radius:2px; background:${target.hex}; border:1px solid #cbd5e1; display:inline-block;"></span>
+        <code style="color: #334155;">${target.hex}</code>
+      </div>
+    `;
+
+    // Card B
+    inspectorCardB.innerHTML = `
+      <div style="font-size: 0.72rem; font-weight: 800; color: #10b981; text-transform: uppercase; margin-bottom: 6px;">Album B</div>
+      <img src="${opp.cover}" onerror="this.onerror=null;this.src='${opp.thumb}'" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.08);" alt="${opp.album}"/>
+      <div style="font-weight: 700; font-size: 0.86rem; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #0f172a;" title="${opp.album}">${opp.album}</div>
+      <div style="font-size: 0.75rem; color: #64748b;">${opp.artist} (${opp.year})</div>
+      <div style="margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #e2e8f0; padding: 2px 8px; border-radius: 12px; font-size: 0.72rem;">
+        <span style="width:12px; height:12px; border-radius:2px; background:${opp.hex}; border:1px solid #cbd5e1; display:inline-block;"></span>
+        <code style="color: #334155;">${opp.hex}</code>
+      </div>
+    `;
+
+    // Center Combined Images
+    blendImgA.src = target.cover;
+    blendImgB.src = opp.cover;
+    updateBlendVisuals();
+
+    // Hybrid Harmony Palette
+    if (harmonyPaletteStrip) {
+      const steps = [0.0, 0.25, 0.5, 0.75, 1.0];
+      const swatches = steps.map(f => {
+        const hex = interpolateHex(target.hex, opp.hex, f);
+        return `<div class="harmony-swatch" style="background:${hex};" title="Blended Hex: ${hex}">${hex}</div>`;
+      });
+      harmonyPaletteStrip.innerHTML = swatches.join("");
+    }
+
+    // Metric Progress Bars
+    if (meterColorFill) meterColorFill.style.width = `${colorPct}%`;
+    if (meterColorVal) meterColorVal.textContent = `${colorPct}%`;
+    if (meterDesignFill) meterDesignFill.style.width = `${designPct}%`;
+    if (meterDesignVal) meterDesignVal.textContent = `${designPct}%`;
+
+    // Stat grid numbers
+    if (inspectorStatGrid) {
+      inspectorStatGrid.innerHTML = `
+        <div>
+          <div style="color: #64748b; font-weight: 600;">Brightness Level</div>
+          <div style="color: #0f172a; font-weight: 700; margin-top: 2px;">
+            <span style="color:#2563eb;">${(target.bright * 100).toFixed(0)}%</span> vs <span style="color:#10b981;">${(opp.bright * 100).toFixed(0)}%</span>
+          </div>
+          <div style="font-size: 0.7rem; color: #94a3b8;">Delta: ${Math.abs((target.bright - opp.bright) * 100).toFixed(0)}%</div>
+        </div>
+        <div>
+          <div style="color: #64748b; font-weight: 600;">Vibrancy / Saturation</div>
+          <div style="color: #0f172a; font-weight: 700; margin-top: 2px;">
+            <span style="color:#2563eb;">${(target.sat * 100).toFixed(0)}%</span> vs <span style="color:#10b981;">${(opp.sat * 100).toFixed(0)}%</span>
+          </div>
+          <div style="font-size: 0.7rem; color: #94a3b8;">Delta: ${Math.abs((target.sat - opp.sat) * 100).toFixed(0)}%</div>
+        </div>
+        <div>
+          <div style="color: #64748b; font-weight: 600;">Composition Contrast</div>
+          <div style="color: #0f172a; font-weight: 700; margin-top: 2px;">
+            <span style="color:#2563eb;">${(target.contrast * 100).toFixed(0)}%</span> vs <span style="color:#10b981;">${(opp.contrast * 100).toFixed(0)}%</span>
+          </div>
+          <div style="font-size: 0.7rem; color: #94a3b8;">Delta: ${Math.abs((target.contrast - opp.contrast) * 100).toFixed(0)}%</div>
+        </div>
+      `;
+    }
   }
 
   function renderCard(item, targetItem, metric, isMatch) {
@@ -557,7 +972,7 @@ function initAlbumComparison() {
     const badgeColor = isMatch ? "#15803d" : "#b91c1c";
 
     return `
-      <div class="match-card" onclick="window.selectAlbumByName('${item.artist.replace(/'/g, "\\'")}', '${item.album.replace(/'/g, "\\'")}')">
+      <div class="match-card" onclick="window.selectOpponentByName('${item.artist.replace(/'/g, "\\'")}', '${item.album.replace(/'/g, "\\'")}')" title="Click to inspect vs ${item.album}">
         <img src="${item.cover}" onerror="this.onerror=null;this.src='${item.thumb}'" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; display: block;" alt="${item.album}"/>
         <div style="font-weight: 700; font-size: 0.88rem; margin-top: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #0f172a;" title="${item.album}">${item.album}</div>
         <div style="font-size: 0.76rem; color: #64748b; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.artist} (${item.year})</div>
@@ -577,85 +992,6 @@ function initAlbumComparison() {
     `;
   }
 
-  function updateInspector(target, match) {
-    if (!inspectorContent || !match) return;
-
-    if (inspectorBadge) {
-      inspectorBadge.textContent = `${(match.overallSim * 100).toFixed(1)}% Match`;
-    }
-
-    inspectorContent.innerHTML = `
-      <!-- Left: Target Album -->
-      <div style="text-align: center;">
-        <img src="${target.cover}" onerror="this.onerror=null;this.src='${target.thumb}'" style="width: 130px; height: 130px; border-radius: 8px; object-fit: cover; border: 2px solid #3b82f6; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="${target.album}"/>
-        <div style="font-weight: 700; font-size: 0.85rem; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${target.album}">${target.album}</div>
-        <div style="font-size: 0.75rem; color: #64748b;">${target.artist}</div>
-        <div style="margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; background: #f1f5f9; padding: 2px 8px; border-radius: 12px; font-size: 0.72rem;">
-          <span style="width:12px; height:12px; border-radius:2px; background:${target.hex}; border:1px solid #cbd5e1; display:inline-block;"></span>
-          <code>${target.hex}</code>
-        </div>
-      </div>
-
-      <!-- Center: Comparative Metric Meters -->
-      <div style="display: flex; flex-direction: column; gap: 14px; padding: 0 10px;">
-        <!-- Color Metric -->
-        <div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #1e293b;">
-            <span>Color Palette Agreement</span>
-            <span style="color: #2563eb;">${(match.colorSim * 100).toFixed(1)}%</span>
-          </div>
-          <div class="meter-bar-container">
-            <div class="meter-bar-fill" style="width: ${(match.colorSim * 100)}%; background: linear-gradient(90deg, #3b82f6, #6366f1);"></div>
-          </div>
-        </div>
-
-        <!-- Design Metric -->
-        <div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #1e293b;">
-            <span>Composition & Design Agreement</span>
-            <span style="color: #059669;">${(match.designSim * 100).toFixed(1)}%</span>
-          </div>
-          <div class="meter-bar-container">
-            <div class="meter-bar-fill" style="width: ${(match.designSim * 100)}%; background: linear-gradient(90deg, #10b981, #059669);"></div>
-          </div>
-        </div>
-
-        <!-- Metric Values Breakdown -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; text-align: center; font-size: 0.74rem;">
-          <div>
-            <div style="color: #64748b; font-weight: 600;">Brightness</div>
-            <div style="color: #0f172a; font-weight: 700; margin-top: 2px;">
-              ${(target.bright * 100).toFixed(0)}% vs ${(match.bright * 100).toFixed(0)}%
-            </div>
-          </div>
-          <div>
-            <div style="color: #64748b; font-weight: 600;">Vibrancy</div>
-            <div style="color: #0f172a; font-weight: 700; margin-top: 2px;">
-              ${(target.sat * 100).toFixed(0)}% vs ${(match.sat * 100).toFixed(0)}%
-            </div>
-          </div>
-          <div>
-            <div style="color: #64748b; font-weight: 600;">Contrast</div>
-            <div style="color: #0f172a; font-weight: 700; margin-top: 2px;">
-              ${(target.contrast * 100).toFixed(0)}% vs ${(match.contrast * 100).toFixed(0)}%
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right: #1 Matched Album -->
-      <div style="text-align: center; cursor: pointer;" onclick="window.selectAlbumByName('${match.artist.replace(/'/g, "\\'")}', '${match.album.replace(/'/g, "\\'")}')" title="Click to make this the selected album">
-        <img src="${match.cover}" onerror="this.onerror=null;this.src='${match.thumb}'" style="width: 130px; height: 130px; border-radius: 8px; object-fit: cover; border: 2px solid #10b981; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="${match.album}"/>
-        <div style="font-weight: 700; font-size: 0.85rem; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${match.album}">${match.album}</div>
-        <div style="font-size: 0.75rem; color: #64748b;">${match.artist}</div>
-        <div style="margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; background: #f1f5f9; padding: 2px 8px; border-radius: 12px; font-size: 0.72rem;">
-          <span style="width:12px; height:12px; border-radius:2px; background:${match.hex}; border:1px solid #cbd5e1; display:inline-block;"></span>
-          <code>${match.hex}</code>
-        </div>
-      </div>
-    `;
-  }
-
   function updateDisplay() {
     const artistName = artistPicker.value;
     const albumName = albumPicker.value;
@@ -665,6 +1001,7 @@ function initAlbumComparison() {
     
     const target = albumData.find(a => a.artist === artistName && a.album === albumName);
     if (!target) return;
+    currentTarget = target;
 
     selectedCard.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -690,7 +1027,7 @@ function initAlbumComparison() {
         </div>
       </div>
       <div style="margin-top: 12px; font-size: 0.72rem; color: #64748b; text-align: center;">
-        💡 <em>Click any similar cover to inspect it</em>
+        💡 <em>Click any match card to inspect or combine it below</em>
       </div>
     `;
 
@@ -708,27 +1045,10 @@ function initAlbumComparison() {
       const a = pool[i];
       if (a.id === target.id) continue;
 
-      const dColor = Math.sqrt(
-        Math.pow(a.r - target.r, 2) +
-        Math.pow(a.g - target.g, 2) +
-        Math.pow(a.b - target.b, 2) +
-        Math.pow(a.sat - target.sat, 2)
-      ) / 2.0;
-      const colorSim = Math.max(0, 1 - dColor);
-
-      const dDesign = Math.sqrt(
-        Math.pow(a.bright - target.bright, 2) +
-        Math.pow(a.contrast - target.contrast, 2)
-      ) / 1.414;
-      const designSim = Math.max(0, 1 - dDesign);
-
-      const overallSim = 0.5 * colorSim + 0.5 * designSim;
-
+      const sim = computePairwiseSimilarity(target, a);
       candidates.push({
         ...a,
-        colorSim,
-        designSim,
-        overallSim
+        ...sim
       });
     }
 
@@ -740,19 +1060,23 @@ function initAlbumComparison() {
       candidates.sort((x, y) => y.overallSim - x.overallSim);
     }
 
-    const mostList = candidates.slice(0, count);
-    const leastList = candidates.slice(-count).reverse();
+    latestMostMatches = candidates.slice(0, count);
+    latestLeastMatches = candidates.slice(-count).reverse();
 
-    mostCards.innerHTML = mostList.map(item => renderCard(item, target, metric, true)).join("");
-    leastCards.innerHTML = leastList.map(item => renderCard(item, target, metric, false)).join("");
+    mostCards.innerHTML = latestMostMatches.map(item => renderCard(item, target, metric, true)).join("");
+    leastCards.innerHTML = latestLeastMatches.map(item => renderCard(item, target, metric, false)).join("");
 
-    // Update Head-to-Head Visual Inspector with #1 match
-    if (mostList.length > 0) {
-      updateInspector(target, mostList[0]);
+    // By default, set Opponent to #1 match if not explicitly locked or different
+    if (latestMostMatches.length > 0 && (!currentOpponent || currentOpponent.id === target.id)) {
+      currentOpponent = latestMostMatches[0];
+      selectOpponentByName(currentOpponent.artist, currentOpponent.album);
+    } else if (currentOpponent) {
+      renderInspector();
     }
   }
 
   window.selectAlbumByName = selectAlbumByName;
+  window.selectOpponentByName = selectOpponentByName;
 
   // Search input event
   if (searchInput) {
@@ -782,6 +1106,72 @@ function initAlbumComparison() {
   scopePicker.addEventListener("change", updateDisplay);
   countPicker.addEventListener("change", updateDisplay);
 
+  // Opponent pickers events
+  oppGenre.addEventListener("change", function() {
+    populateOpponentArtists(oppGenre.value);
+    populateOpponentAlbums(oppArtist.value);
+    const item = albumData.find(a => a.artist === oppArtist.value && a.album === oppAlbum.value);
+    if (item) {
+      currentOpponent = item;
+      renderInspector();
+    }
+  });
+
+  oppArtist.addEventListener("change", function() {
+    populateOpponentAlbums(oppArtist.value);
+    const item = albumData.find(a => a.artist === oppArtist.value && a.album === oppAlbum.value);
+    if (item) {
+      currentOpponent = item;
+      renderInspector();
+    }
+  });
+
+  oppAlbum.addEventListener("change", function() {
+    const item = albumData.find(a => a.artist === oppArtist.value && a.album === oppAlbum.value);
+    if (item) {
+      currentOpponent = item;
+      renderInspector();
+    }
+  });
+
+  // Quick Opponent buttons
+  if (btnUseTop) {
+    btnUseTop.addEventListener("click", function() {
+      if (latestMostMatches.length > 0) {
+        selectOpponentByName(latestMostMatches[0].artist, latestMostMatches[0].album);
+      }
+    });
+  }
+
+  if (btnUseLeast) {
+    btnUseLeast.addEventListener("click", function() {
+      if (latestLeastMatches.length > 0) {
+        selectOpponentByName(latestLeastMatches[0].artist, latestLeastMatches[0].album);
+      }
+    });
+  }
+
+  if (btnRandomOpp) {
+    btnRandomOpp.addEventListener("click", function() {
+      const rand = albumData[Math.floor(Math.random() * albumData.length)];
+      selectOpponentByName(rand.artist, rand.album);
+    });
+  }
+
+  // Blend Slider & Mode Tabs
+  if (blendSlider) {
+    blendSlider.addEventListener("input", updateBlendVisuals);
+  }
+
+  blendTabs.forEach(tab => {
+    tab.addEventListener("click", function() {
+      blendTabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      activeBlendMode = tab.getAttribute("data-mode");
+      updateBlendVisuals();
+    });
+  });
+
   // Palette Pills Filtering
   palettePills.forEach(pill => {
     pill.addEventListener("click", function() {
@@ -810,8 +1200,11 @@ function initAlbumComparison() {
     });
   }
 
+  // Initial load
   populateArtists("all", "Taylor Swift");
   populateAlbumsForArtist("Taylor Swift", "Lover");
+  populateOpponentArtists("all");
+  populateOpponentAlbums(oppArtist.value);
   updateDisplay();
 }
 

@@ -33,6 +33,7 @@ album_catalog <- pop_albums |>
     artist,
     album,
     year,
+    genre,
     cover = cover_full,
     thumb = cover_thumbnail,
     hex = hex_color,
@@ -65,10 +66,10 @@ cat('\n</script>\n')
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 16px 20px;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.03);
     display: flex;
-    gap: 16px;
+    gap: 14px;
     flex-wrap: wrap;
     align-items: flex-end;
   }
@@ -78,17 +79,17 @@ cat('\n</script>\n')
     gap: 6px;
   }
   .toolbar-label {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #475569;
   }
   .toolbar-select {
-    padding: 9px 14px;
+    padding: 9px 12px;
     border-radius: 8px;
     border: 1px solid #cbd5e1;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     background: #f8fafc;
     color: #0f172a;
     font-weight: 500;
@@ -105,8 +106,8 @@ cat('\n</script>\n')
     color: #ffffff;
     border: none;
     border-radius: 8px;
-    padding: 9px 18px;
-    font-size: 0.95rem;
+    padding: 9px 16px;
+    font-size: 0.92rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -114,7 +115,7 @@ cat('\n</script>\n')
     gap: 6px;
     box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
     transition: transform 0.15s, box-shadow 0.15s;
-    height: 42px;
+    height: 40px;
   }
   .btn-random:hover {
     transform: translateY(-1px);
@@ -122,6 +123,35 @@ cat('\n</script>\n')
   }
   .btn-random:active {
     transform: translateY(1px);
+  }
+  .palette-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    padding: 8px 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+  .palette-pill {
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid #cbd5e1;
+    background: white;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+  .palette-pill:hover, .palette-pill.active {
+    background: #0f172a;
+    color: white;
+    border-color: #0f172a;
   }
   .comparison-grid {
     display: grid;
@@ -164,23 +194,47 @@ cat('\n</script>\n')
     border-radius: 10px;
     pointer-events: none;
   }
+  .genre-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #475569;
+  }
 </style>
 
 <div class="comparison-toolbar">
-  <div class="toolbar-item" style="flex: 1.2; min-width: 220px;">
+  <div class="toolbar-item" style="flex: 1; min-width: 140px;">
+    <label class="toolbar-label" for="genre-picker">Genre</label>
+    <select id="genre-picker" class="toolbar-select">
+      <option value="all" selected>All Genres</option>
+      <option value="Pop">Pop</option>
+      <option value="Rock">Rock</option>
+      <option value="Hip-Hop">Hip-Hop</option>
+      <option value="R&B / Soul">R&B / Soul</option>
+      <option value="Country">Country</option>
+      <option value="Electronic">Electronic</option>
+      <option value="Latin">Latin</option>
+      <option value="Jazz">Jazz</option>
+    </select>
+  </div>
+
+  <div class="toolbar-item" style="flex: 1.4; min-width: 200px;">
     <label class="toolbar-label" for="artist-picker">Artist</label>
     <select id="artist-picker" class="toolbar-select">
     </select>
   </div>
 
-  <div class="toolbar-item" style="flex: 1.8; min-width: 260px;">
+  <div class="toolbar-item" style="flex: 1.8; min-width: 220px;">
     <label class="toolbar-label" for="album-picker">Album</label>
     <select id="album-picker" class="toolbar-select">
     </select>
   </div>
 
-  <div class="toolbar-item" style="min-width: 200px;">
-    <label class="toolbar-label" for="metric-picker">Comparison Mode</label>
+  <div class="toolbar-item" style="min-width: 170px;">
+    <label class="toolbar-label" for="metric-picker">Compare By</label>
     <select id="metric-picker" class="toolbar-select">
       <option value="overall" selected>Color & Design</option>
       <option value="color">Color Palette Only</option>
@@ -188,11 +242,41 @@ cat('\n</script>\n')
     </select>
   </div>
 
+  <div class="toolbar-item" style="min-width: 150px;">
+    <label class="toolbar-label" for="scope-picker">Match Pool</label>
+    <select id="scope-picker" class="toolbar-select">
+      <option value="all" selected>All Genres</option>
+      <option value="same">Same Genre Only</option>
+    </select>
+  </div>
+
+  <div class="toolbar-item" style="min-width: 110px;">
+    <label class="toolbar-label" for="count-picker">Matches</label>
+    <select id="count-picker" class="toolbar-select">
+      <option value="3" selected>Top 3</option>
+      <option value="6">Top 6</option>
+    </select>
+  </div>
+
   <div class="toolbar-item">
-    <button id="btn-surprise" class="btn-random" title="Select a random album from the 1,000+ catalog">
+    <button id="btn-surprise" class="btn-random" title="Select a random album">
       <span>🎲</span> Surprise Me!
     </button>
   </div>
+</div>
+
+<!-- Color Aesthetic Filter Bar -->
+<div class="palette-bar">
+  <span style="font-size: 0.78rem; font-weight: 700; color: #475569; text-transform: uppercase;">Palette Mood:</span>
+  <span class="palette-pill active" data-palette="all">🌈 All</span>
+  <span class="palette-pill" data-palette="Warm Red & Orange"><span style="width:10px;height:10px;background:#e11d48;border-radius:50%;display:inline-block;"></span> Warm Red</span>
+  <span class="palette-pill" data-palette="Cool Blue"><span style="width:10px;height:10px;background:#2563eb;border-radius:50%;display:inline-block;"></span> Cool Blue</span>
+  <span class="palette-pill" data-palette="Green"><span style="width:10px;height:10px;background:#16a34a;border-radius:50%;display:inline-block;"></span> Green</span>
+  <span class="palette-pill" data-palette="Pink & Magenta"><span style="width:10px;height:10px;background:#d946ef;border-radius:50%;display:inline-block;"></span> Pink</span>
+  <span class="palette-pill" data-palette="Warm Yellow & Gold"><span style="width:10px;height:10px;background:#eab308;border-radius:50%;display:inline-block;"></span> Yellow/Gold</span>
+  <span class="palette-pill" data-palette="Dark & Moody"><span style="width:10px;height:10px;background:#1e293b;border-radius:50%;display:inline-block;"></span> Dark & Moody</span>
+  <span class="palette-pill" data-palette="Minimalist White"><span style="width:10px;height:10px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:50%;display:inline-block;"></span> White</span>
+  <span class="palette-pill" data-palette="Monochrome / Gray"><span style="width:10px;height:10px;background:#94a3b8;border-radius:50%;display:inline-block;"></span> Gray</span>
 </div>
 
 <div class="comparison-grid">
@@ -208,9 +292,9 @@ cat('\n</script>\n')
         <h4 style="margin: 0; color: #166534; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
           <span>🟢</span> Most Similar Album Covers
         </h4>
-        <span style="font-size: 0.75rem; color: #15803d; font-weight: 600;">Top Matches across 1,000+ Albums</span>
+        <span id="match-pool-label" style="font-size: 0.75rem; color: #15803d; font-weight: 600;">Top Matches across Catalog</span>
       </div>
-      <div id="most-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+      <div id="most-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px;">
       </div>
     </div>
 
@@ -222,7 +306,7 @@ cat('\n</script>\n')
         </h4>
         <span style="font-size: 0.75rem; color: #b91c1c; font-weight: 600;">Maximum Visual Contrast</span>
       </div>
-      <div id="least-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+      <div id="least-similar-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px;">
       </div>
     </div>
   </div>
@@ -234,47 +318,62 @@ function initAlbumComparison() {
   if (!dataElement) return;
   const albumData = JSON.parse(dataElement.textContent);
 
+  const genrePicker = document.getElementById("genre-picker");
   const artistPicker = document.getElementById("artist-picker");
   const albumPicker = document.getElementById("album-picker");
   const metricPicker = document.getElementById("metric-picker");
+  const scopePicker = document.getElementById("scope-picker");
+  const countPicker = document.getElementById("count-picker");
   const surpriseBtn = document.getElementById("btn-surprise");
   const selectedCard = document.getElementById("selected-card");
   const mostCards = document.getElementById("most-similar-cards");
   const leastCards = document.getElementById("least-similar-cards");
+  const matchPoolLabel = document.getElementById("match-pool-label");
+  const palettePills = document.querySelectorAll(".palette-pill");
 
-  if (!artistPicker || !albumPicker || !metricPicker || !selectedCard || !mostCards || !leastCards) return;
+  let activePaletteFilter = "all";
 
-  const allArtists = Array.from(new Set(albumData.map(a => a.artist))).sort((a, b) => a.localeCompare(b));
-  const featured = ["Taylor Swift", "Red Hot Chili Peppers", "Billie Eilish", "Harry Styles", "Bruno Mars", "Olivia Rodrigo", "Dua Lipa", "Ariana Grande", "Ed Sheeran", "Adele", "Michael Jackson"];
-  
-  artistPicker.innerHTML = "";
-  
-  const featuredGroup = document.createElement("optgroup");
-  featuredGroup.label = "Featured Artists";
-  featured.forEach(name => {
-    if (allArtists.includes(name)) {
+  function getFilteredArtists(selectedGenre, selectedPalette) {
+    let pool = albumData;
+    if (selectedGenre && selectedGenre !== "all") {
+      pool = pool.filter(a => a.genre === selectedGenre);
+    }
+    if (selectedPalette && selectedPalette !== "all") {
+      pool = pool.filter(a => a.palette === selectedPalette);
+    }
+    return Array.from(new Set(pool.map(a => a.artist))).sort((a, b) => a.localeCompare(b));
+  }
+
+  function populateArtists(selectedGenre, defaultArtist) {
+    artistPicker.innerHTML = "";
+    const artists = getFilteredArtists(selectedGenre, activePaletteFilter);
+
+    if (artists.length === 0) {
+      const opt = document.createElement("option");
+      opt.textContent = "No artists in this filter";
+      artistPicker.appendChild(opt);
+      return;
+    }
+
+    artists.forEach((name, idx) => {
       const opt = document.createElement("option");
       opt.value = name;
       opt.textContent = name;
-      if (name === "Taylor Swift") opt.selected = true;
-      featuredGroup.appendChild(opt);
-    }
-  });
-  artistPicker.appendChild(featuredGroup);
-
-  const allGroup = document.createElement("optgroup");
-  allGroup.label = "All Artists (A-Z)";
-  allArtists.forEach(name => {
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    allGroup.appendChild(opt);
-  });
-  artistPicker.appendChild(allGroup);
+      if (defaultArtist ? name === defaultArtist : idx === 0) {
+        opt.selected = true;
+      }
+      artistPicker.appendChild(opt);
+    });
+  }
 
   function populateAlbumsForArtist(artistName, defaultAlbum) {
     albumPicker.innerHTML = "";
-    const list = albumData.filter(a => a.artist === artistName);
+    let list = albumData.filter(a => a.artist === artistName);
+    if (activePaletteFilter !== "all") {
+      const filtered = list.filter(a => a.palette === activePaletteFilter);
+      if (filtered.length > 0) list = filtered;
+    }
+
     list.forEach((item, idx) => {
       const opt = document.createElement("option");
       opt.value = item.album;
@@ -287,12 +386,18 @@ function initAlbumComparison() {
   }
 
   function selectAlbumByName(artistName, albumName) {
+    const item = albumData.find(a => a.artist === artistName && a.album === albumName);
+    if (item && genrePicker.value !== "all" && item.genre !== genrePicker.value) {
+      genrePicker.value = "all";
+    }
+    populateArtists(genrePicker.value, artistName);
     artistPicker.value = artistName;
     populateAlbumsForArtist(artistName, albumName);
+    albumPicker.value = albumName;
     updateDisplay();
   }
 
-  function renderCard(item, metric, isMatch) {
+  function renderCard(item, targetItem, metric, isMatch) {
     let scoreText = "";
     if (metric === "color") {
       scoreText = `Color: ${(item.colorSim * 100).toFixed(1)}%`;
@@ -308,13 +413,19 @@ function initAlbumComparison() {
     return `
       <div class="match-card" onclick="window.selectAlbumByName('${item.artist.replace(/'/g, "\\'")}', '${item.album.replace(/'/g, "\\'")}')">
         <img src="${item.cover}" onerror="this.onerror=null;this.src='${item.thumb}'" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; display: block;" alt="${item.album}"/>
-        <div style="font-weight: 700; font-size: 0.9rem; margin-top: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #0f172a;" title="${item.album}">${item.album}</div>
-        <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.artist} (${item.year})</div>
-        <div style="display: inline-block; background: ${badgeBg}; color: ${badgeColor}; font-weight: 700; font-size: 0.78rem; padding: 3px 10px; border-radius: 12px;">
-          ${scoreText}
+        <div style="font-weight: 700; font-size: 0.88rem; margin-top: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #0f172a;" title="${item.album}">${item.album}</div>
+        <div style="font-size: 0.76rem; color: #64748b; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.artist} (${item.year})</div>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 6px; margin-bottom: 6px;">
+          <span class="genre-badge">${item.genre}</span>
+          <span style="display: inline-block; background: ${badgeBg}; color: ${badgeColor}; font-weight: 700; font-size: 0.74rem; padding: 2px 8px; border-radius: 10px;">
+            ${scoreText}
+          </span>
         </div>
-        <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 6px;">
-          Color: ${(item.colorSim * 100).toFixed(0)}% | Design: ${(item.designSim * 100).toFixed(0)}%
+        <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.7rem; color: #64748b;">
+          <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${targetItem.hex};border:1px solid #cbd5e1;" title="Target color"></span>
+          <span>➔</span>
+          <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${item.hex};border:1px solid #cbd5e1;" title="Match color"></span>
+          <span style="font-size: 0.68rem; color: #94a3b8;">${(item.colorSim * 100).toFixed(0)}% col | ${(item.designSim * 100).toFixed(0)}% des</span>
         </div>
       </div>
     `;
@@ -324,17 +435,22 @@ function initAlbumComparison() {
     const artistName = artistPicker.value;
     const albumName = albumPicker.value;
     const metric = metricPicker.value;
+    const scope = scopePicker.value;
+    const count = parseInt(countPicker.value, 10) || 3;
     
     const target = albumData.find(a => a.artist === artistName && a.album === albumName);
     if (!target) return;
 
     selectedCard.innerHTML = `
-      <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: #2563eb; letter-spacing: 0.06em; margin-bottom: 8px; text-align: center;">Selected Album</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: #2563eb; letter-spacing: 0.06em;">Selected Album</span>
+        <span class="genre-badge" style="background: #dbeafe; color: #1e40af; font-weight: 700;">${target.genre}</span>
+      </div>
       <img src="${target.cover}" onerror="this.onerror=null;this.src='${target.thumb}'" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; display: block;" alt="${target.album}"/>
-      <h3 style="margin: 14px 0 4px 0; font-size: 1.25rem; font-weight: 700; color: #0f172a; text-align: center;">${target.album}</h3>
-      <div style="font-size: 0.95rem; color: #64748b; font-weight: 500; text-align: center;">${target.artist} &bull; ${target.year}</div>
+      <h3 style="margin: 14px 0 4px 0; font-size: 1.2rem; font-weight: 700; color: #0f172a; text-align: center;">${target.album}</h3>
+      <div style="font-size: 0.92rem; color: #64748b; font-weight: 500; text-align: center;">${target.artist} &bull; ${target.year}</div>
 
-      <!-- Extracted Visual DNA / Color Swatch -->
+      <!-- Extracted Visual Profile -->
       <div style="margin-top: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px;">
         <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 6px;">Visual Profile</div>
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
@@ -349,13 +465,22 @@ function initAlbumComparison() {
         </div>
       </div>
       <div style="margin-top: 12px; font-size: 0.72rem; color: #64748b; text-align: center;">
-        💡 <em>Click any similar cover on the right to analyze it</em>
+        💡 <em>Click any similar cover to inspect it</em>
       </div>
     `;
 
+    // Filter candidate pool by scope
+    let pool = albumData;
+    if (scope === "same") {
+      pool = pool.filter(a => a.genre === target.genre);
+      if (matchPoolLabel) matchPoolLabel.textContent = `Within ${target.genre} (${pool.length} Albums)`;
+    } else {
+      if (matchPoolLabel) matchPoolLabel.textContent = `Across All Genres (${pool.length} Albums)`;
+    }
+
     const candidates = [];
-    for (let i = 0; i < albumData.length; i++) {
-      const a = albumData[i];
+    for (let i = 0; i < pool.length; i++) {
+      const a = pool[i];
       if (a.id === target.id) continue;
 
       const dColor = Math.sqrt(
@@ -390,15 +515,20 @@ function initAlbumComparison() {
       candidates.sort((x, y) => y.overallSim - x.overallSim);
     }
 
-    const mostList = candidates.slice(0, 3);
-    const leastList = candidates.slice(-3).reverse();
+    const mostList = candidates.slice(0, count);
+    const leastList = candidates.slice(-count).reverse();
 
-    mostCards.innerHTML = mostList.map(item => renderCard(item, metric, true)).join("");
-    leastCards.innerHTML = leastList.map(item => renderCard(item, metric, false)).join("");
+    mostCards.innerHTML = mostList.map(item => renderCard(item, target, metric, true)).join("");
+    leastCards.innerHTML = leastList.map(item => renderCard(item, target, metric, false)).join("");
   }
 
-  // Expose selectAlbumByName globally so card click handlers can call it
   window.selectAlbumByName = selectAlbumByName;
+
+  genrePicker.addEventListener("change", function() {
+    populateArtists(genrePicker.value);
+    populateAlbumsForArtist(artistPicker.value);
+    updateDisplay();
+  });
 
   artistPicker.addEventListener("change", function() {
     populateAlbumsForArtist(artistPicker.value);
@@ -407,15 +537,38 @@ function initAlbumComparison() {
 
   albumPicker.addEventListener("change", updateDisplay);
   metricPicker.addEventListener("change", updateDisplay);
+  scopePicker.addEventListener("change", updateDisplay);
+  countPicker.addEventListener("change", updateDisplay);
+
+  // Palette Pills Filtering
+  palettePills.forEach(pill => {
+    pill.addEventListener("click", function() {
+      palettePills.forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      activePaletteFilter = pill.getAttribute("data-palette");
+      populateArtists(genrePicker.value);
+      populateAlbumsForArtist(artistPicker.value);
+      updateDisplay();
+    });
+  });
 
   // Surprise Me Button
   if (surpriseBtn) {
     surpriseBtn.addEventListener("click", function() {
-      const randomAlbum = albumData[Math.floor(Math.random() * albumData.length)];
+      let pool = albumData;
+      if (genrePicker.value !== "all") {
+        pool = pool.filter(a => a.genre === genrePicker.value);
+      }
+      if (activePaletteFilter !== "all") {
+        const palPool = pool.filter(a => a.palette === activePaletteFilter);
+        if (palPool.length > 0) pool = palPool;
+      }
+      const randomAlbum = pool[Math.floor(Math.random() * pool.length)];
       selectAlbumByName(randomAlbum.artist, randomAlbum.album);
     });
   }
 
+  populateArtists("all", "Taylor Swift");
   populateAlbumsForArtist("Taylor Swift", "Lover");
   updateDisplay();
 }
@@ -430,7 +583,7 @@ if (document.readyState === "loading") {
 
 ---
 
-## All Albums Catalog (1,000+ Covers)
+## All Albums Catalog (1,700+ Covers across 8 Genres)
 
 ```{r}
 #| label: table
@@ -441,7 +594,7 @@ pop_albums |>
     Cover = sprintf('<img src="%s" width="45" height="45" style="border-radius: 4px; object-fit: cover;" alt="%s" loading="lazy"/>', cover_thumbnail, album),
     Color = sprintf('<span style="display:inline-block; width:18px; height:18px; background-color:%s; border:1px solid #cbd5e1; border-radius:3px; vertical-align:middle;" title="%s"></span>', hex_color, hex_color)
   ) |>
-  select(Cover, Color, Artist = artist, Album = album, Year = year, Genre = genre, Palette = palette) |>
+  select(Cover, Color, Artist = artist, Album = album, Genre = genre, Year = year, Palette = palette) |>
   datatable(
     options = list(pageLength = 10, searchHighlight = TRUE),
     escape = FALSE,

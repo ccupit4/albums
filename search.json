@@ -4,28 +4,28 @@
     "href": "index.html",
     "title": "Album Cover Similarity Analysis",
     "section": "",
-    "text": "Album covers are compared across two complementary visual dimensions:\n\nColor (HSV Palette): Compares distribution of hue, color saturation, and brightness.\nDesign (Spatial Composition): Compares spatial layout, lighting balance, and structural shapes.\n\nScores range from -1.0 (complete opposites) to +1.0 (virtually identical).\n\n\n\n\n\n\nTipExplore 1,000 Pop Albums\n\n\n\nLooking for more? Browse the 1,000 Pop Albums Catalog with interactive search, filters, and cover art thumbnails."
+    "text": "Every album cover is compared across two visual dimensions:\n\nColor Palette: Compares dominant RGB hues, saturation (vibrancy), and color tone.\nDesign & Composition: Compares overall brightness balance and grayscale visual contrast.\n\nScores range from 0% (completely opposite visual styles) to 100% (virtually identical color & layout)."
   },
   {
     "objectID": "index.html#how-similarity-is-measured",
     "href": "index.html#how-similarity-is-measured",
     "title": "Album Cover Similarity Analysis",
     "section": "",
-    "text": "Album covers are compared across two complementary visual dimensions:\n\nColor (HSV Palette): Compares distribution of hue, color saturation, and brightness.\nDesign (Spatial Composition): Compares spatial layout, lighting balance, and structural shapes.\n\nScores range from -1.0 (complete opposites) to +1.0 (virtually identical).\n\n\n\n\n\n\nTipExplore 1,000 Pop Albums\n\n\n\nLooking for more? Browse the 1,000 Pop Albums Catalog with interactive search, filters, and cover art thumbnails."
+    "text": "Every album cover is compared across two visual dimensions:\n\nColor Palette: Compares dominant RGB hues, saturation (vibrancy), and color tone.\nDesign & Composition: Compares overall brightness balance and grayscale visual contrast.\n\nScores range from 0% (completely opposite visual styles) to 100% (virtually identical color & layout)."
   },
   {
     "objectID": "index.html#interactive-album-comparison-tool",
     "href": "index.html#interactive-album-comparison-tool",
     "title": "Album Cover Similarity Analysis",
     "section": "Interactive Album Comparison Tool",
-    "text": "Interactive Album Comparison Tool\nPick any album below to instantly inspect its most similar and least similar matches.\n\n\n\n\n 1. Pick an Artist:   Taylor Swift Red Hot Chili Peppers \n\n\n 2. Pick an Album:   \n\n\n 3. Compare By:   Combined (Color & Design) Color Palette Only Spatial Design Only \n\n\n\n\n\n\n\n\n\n\n🟢 Most Similar Album Covers\n\n\n\n\n\n\n\n🔴 Least Similar Album Covers"
+    "text": "Interactive Album Comparison Tool\nPick any artist and album below to instantly compare its cover against the entire catalog of 1,000+ albums.\n\n\n  \n    \n      \n        1. Pick an Artist:\n      \n      \n      \n    \n\n    \n      \n        2. Pick an Album:\n      \n      \n      \n    \n\n    \n      \n        3. Compare By:\n      \n      \n        Combined (Color & Design)\n        Color Palette Only\n        Spatial Design Only\n      \n    \n  \n\n\n\n  \n  \n\n  \n    \n      \n        🟢 Most Similar Album Covers Across the Catalog\n      \n      \n      \n    \n\n    \n      \n        🔴 Least Similar Album Covers Across the Catalog"
   },
   {
-    "objectID": "index.html#all-analyzed-albums",
-    "href": "index.html#all-analyzed-albums",
+    "objectID": "index.html#all-analyzed-albums-1000-pop-rock-collection",
+    "href": "index.html#all-analyzed-albums-1000-pop-rock-collection",
     "title": "Album Cover Similarity Analysis",
-    "section": "All Analyzed Albums",
-    "text": "All Analyzed Albums\n\n\n\n\n\n\n\n\n\n\nArtist\nAlbum\nRelease Date\n\n\n\n\nTaylor Swift\nLover\n2019-08-23\n\n\nTaylor Swift\nTHE TORTURED POETS DEPARTMENT: THE ANTHOLOGY\n2024-04-19\n\n\nTaylor Swift\nfolklore\n2020-07-24\n\n\nTaylor Swift\nMidnights\n2022-10-21\n\n\nTaylor Swift\nRed\n2021-11-12\n\n\nTaylor Swift\nevermore\n2020-12-11\n\n\nTaylor Swift\nFearless\n2021-04-09\n\n\nTaylor Swift\nThe Life of a Showgirl + “A Look Behind the Curtain”\n2025-10-03\n\n\nTaylor Swift\nSpeak Now\n2023-07-07\n\n\nTaylor Swift\nreputation\n2017-11-10\n\n\nRed Hot Chili Peppers\nI’m with You\n2011-08-26\n\n\nRed Hot Chili Peppers\nGreatest Hits\n2003-11-18\n\n\nRed Hot Chili Peppers\nThe Getaway\n2016-06-17\n\n\nRed Hot Chili Peppers\nBlood Sugar Sex Magik\n1991-09-24\n\n\nRed Hot Chili Peppers\nStadium Arcadium\n2006-05-09\n\n\nRed Hot Chili Peppers\nUnlimited Love\n2022-04-01\n\n\nRed Hot Chili Peppers\nCalifornication\n1999-06-08\n\n\nRed Hot Chili Peppers\nBy the Way\n2002-07-09\n\n\nRed Hot Chili Peppers\nReturn of the Dream Canteen\n2022-10-14\n\n\nRed Hot Chili Peppers\nRock & Roll Hall of Fame Covers - EP\n2012-05-01"
+    "section": "All Analyzed Albums (1,000+ Pop & Rock Collection)",
+    "text": "All Analyzed Albums (1,000+ Pop & Rock Collection)\nBrowse and search the entire collection of album covers below:"
   },
   {
     "objectID": "about.html",
@@ -53,7 +53,7 @@
     "href": "pop-albums.html#extreme-comparisons-the-visual-spectrum",
     "title": "1,000 Pop Album Covers: Visual Comparison",
     "section": "2. Extreme Comparisons: The Visual Spectrum",
-    "text": "2. Extreme Comparisons: The Visual Spectrum\nHere is what the extremes of the 1,000 album collection look like when placed side-by-side.\n\nBrightest vs. Darkest Covers\n\n\n\n☀️ Brightest (High Exposure & White)\n\n\n\n\n\nif i could just stop the time, (may 2024-may 2025) - EP\n\n\n99.7% Light\n\n\n\n\n\nSingles\n\n\n99.2% Light\n\n\n\n\n\nmono.\n\n\n98.6% Light\n\n\n\n\n\n\n🌑 Darkest (Shadows & Low-Key)\n\n\n\n\n\nFingers Crossed - Single\n\n\n0.6% Light\n\n\n\n\n\nMIC Drop (feat. Desiigner) [Steve Aoki Remix] - Single\n\n\n1.4% Light\n\n\n\n\n\nThe 7th Sense (Sung by TAEYONG, MARK, JAEHYUN, DOYOUNG & TEN) - Single\n\n\n1.6% Light\n\n\n\n\n\n\n\nMost Saturated (Vivid) vs. Least Saturated (Monochrome)\n\n\n\n🎨 Most Vivid & Colorful\n\n\n\n\n\nChamber - Single\n\n\n98.6% Saturation\n\n\n\n\n\nPain - Single\n\n\n95.7% Saturation\n\n\n\n\n\nThe Dream Chapter: ETERNITY - EP\n\n\n93.2% Saturation\n\n\n\n\n\n\n📷 Grayscale / Black & White\n\n\n\n\n\nreputation\n\n\n0% Saturation\n\n\n\n\n\nThe Art of Loving\n\n\n0% Saturation\n\n\n\n\n\nSailor Song - Single\n\n\n0% Saturation"
+    "text": "2. Extreme Comparisons: The Visual Spectrum\nHere is what the extremes of the 1,000 album collection look like when placed side-by-side.\n\nBrightest vs. Darkest Covers\n\n\n\n☀️ Brightest (High Exposure & White)\n\n\n\n\n\nif i could just stop the time, (may 2024-may 2025) - EP\n\n\n99.7% Light\n\n\n\n\n\nSingles\n\n\n99.2% Light\n\n\n\n\n\nmono.\n\n\n98.6% Light\n\n\n\n\n\n\n🌑 Darkest (Shadows & Low-Key)\n\n\n\n\n\nFingers Crossed - Single\n\n\n0.6% Light\n\n\n\n\n\nMIC Drop (feat. Desiigner) [Steve Aoki Remix] - Single\n\n\n1.4% Light\n\n\n\n\n\nThe 7th Sense (Sung by TAEYONG, MARK, JAEHYUN, DOYOUNG & TEN) - Single\n\n\n1.6% Light\n\n\n\n\n\n\n\nMost Saturated (Vivid) vs. Least Saturated (Monochrome)\n\n\n\n🎨 Most Vivid & Colorful\n\n\n\n\n\nChamber - Single\n\n\n98.6% Saturation\n\n\n\n\n\nPain - Single\n\n\n95.7% Saturation\n\n\n\n\n\nThe Dream Chapter: ETERNITY - EP\n\n\n93.2% Saturation\n\n\n\n\n\n\n📷 Grayscale / Black & White\n\n\n\n\n\nfolklore\n\n\n0% Saturation\n\n\n\n\n\nreputation\n\n\n0% Saturation\n\n\n\n\n\nThe Art of Loving\n\n\n0% Saturation"
   },
   {
     "objectID": "pop-albums.html#compare-by-palette-style",

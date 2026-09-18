@@ -1,5 +1,49 @@
 ---
-title: "About"
+title: "About & Full Album Catalog"
+format:
+  html:
+    page-layout: full
 ---
 
-About this site
+This project explores the visual aesthetics and cover art designs of **1,788 albums** spanning 8 major music genres (Pop, Rock, Hip-Hop, R&B/Soul, Country, Electronic, Latin, and Jazz). 
+
+Every album cover has been computationally analyzed for:
+
+- **Dominant Color Palette:** Primary RGB hues and dominant hex swatches.
+- **Brightness Balance:** Mean luminance across the artwork (0% dark to 100% bright).
+- **Vibrancy & Saturation:** Intensity and purity of color (monochrome to hyper-vivid).
+- **Design Contrast:** Grayscale standard deviation measuring visual sharpness and composition depth.
+
+---
+
+## Complete Catalog (1,788 Albums across 8 Genres)
+
+Use the search bar and column filters below to explore the full dataset, view cover artwork, and inspect extracted color swatches.
+
+```{r}
+#| label: catalog-table
+#| message: false
+#| warning: false
+#| echo: false
+
+library(tidyverse)
+library(DT)
+
+pop_albums <- read_csv("pop_albums.csv", show_col_types = FALSE)
+
+pop_albums |>
+  mutate(
+    Cover = sprintf('<img src="%s" width="50" height="50" style="border-radius: 6px; object-fit: cover;" alt="%s" loading="lazy"/>', cover_thumbnail, album),
+    Color = sprintf('<span style="display:inline-block; width:22px; height:22px; background-color:%s; border:1px solid #cbd5e1; border-radius:4px; vertical-align:middle; box-shadow: 0 1px 2px rgba(0,0,0,0.15);" title="%s"></span>', hex_color, hex_color)
+  ) |>
+  select(Cover, Color, Artist = artist, Album = album, Genre = genre, Year = year, Palette = palette, Brightness = brightness, Saturation = saturation) |>
+  datatable(
+    options = list(
+      pageLength = 15,
+      searchHighlight = TRUE,
+      autoWidth = TRUE
+    ),
+    escape = FALSE,
+    rownames = FALSE
+  )
+```

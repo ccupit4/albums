@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Album Covers – Albums</title>
+<title>Album Cover Similarity Analysis – Albums</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -25,6 +25,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -119,8 +154,11 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#taylor-swift" id="toc-taylor-swift" class="nav-link active" data-scroll-target="#taylor-swift">Taylor Swift</a></li>
-  <li><a href="#red-hot-chili-peppers" id="toc-red-hot-chili-peppers" class="nav-link" data-scroll-target="#red-hot-chili-peppers">Red Hot Chili Peppers</a></li>
+  <li><a href="#how-similarity-is-measured" id="toc-how-similarity-is-measured" class="nav-link active" data-scroll-target="#how-similarity-is-measured">How Similarity Is Measured</a></li>
+  <li><a href="#most-similar-album-covers" id="toc-most-similar-album-covers" class="nav-link" data-scroll-target="#most-similar-album-covers">Most Similar Album Covers</a></li>
+  <li><a href="#least-similar-album-covers" id="toc-least-similar-album-covers" class="nav-link" data-scroll-target="#least-similar-album-covers">Least Similar Album Covers</a></li>
+  <li><a href="#cross-artist-comparison" id="toc-cross-artist-comparison" class="nav-link" data-scroll-target="#cross-artist-comparison">Cross-Artist Comparison</a></li>
+  <li><a href="#all-analyzed-albums" id="toc-all-analyzed-albums" class="nav-link" data-scroll-target="#all-analyzed-albums">All Analyzed Albums</a></li>
   </ul>
 </nav>
     </div>
@@ -129,8 +167,8 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Album Covers</h1>
-<p class="subtitle lead">Exploring album artwork from Taylor Swift and Red Hot Chili Peppers</p>
+<h1 class="title">Album Cover Similarity Analysis</h1>
+<p class="subtitle lead">Comparing Taylor Swift and Red Hot Chili Peppers artwork by color and design</p>
 </div>
 
 
@@ -147,149 +185,347 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This site showcases album covers and release information for <strong>Taylor Swift</strong> and <strong>Red Hot Chili Peppers</strong>, retrieved using the iTunes Search API.</p>
-<section id="taylor-swift" class="level2">
-<h2 class="anchored" data-anchor-id="taylor-swift">Taylor Swift</h2>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px;">
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/30/0c/5a/300c5a57-d3be-a170-f880-f63380ca6312/25UM1IM19577.rgb.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="The Life of a Showgirl">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-The Life of a Showgirl
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load metadata and pairwise similarity metrics</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>albums <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"album_metadata.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>pairs <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"album_similarity_pairs.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
-<div style="color: #666; font-size: 0.8em;">
-2025-10-03
-</div>
-</div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/a3/8a/8d/a38a8de5-ae11-154c-dca5-221e6549caee/24UMGIM44778.rgb.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="THE TORTURED POETS DEPARTMENT: THE ANTHOLOGY">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-THE TORTURED POETS DEPARTMENT: THE ANTHOLOGY
-</div>
-<div style="color: #666; font-size: 0.8em;">
-2024-04-19
-</div>
-</div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/6b/7d/61/6b7d61e4-e6f1-83bc-d645-463aa06b33c4/24UMGIM29563.rgb.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="THE TORTURED POETS DEPARTMENT">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-THE TORTURED POETS DEPARTMENT
-</div>
-<div style="color: #666; font-size: 0.8em;">
-2024-04-19
-</div>
-</div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/8e/35/6c/8e356cc2-0be4-b83b-d29e-b578623df2ac/23UM1IM34052.rgb.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="1989 (Taylor's Version) [Deluxe]">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-1989 (Taylor’s Version) [Deluxe]
-</div>
-<div style="color: #666; font-size: 0.8em;">
-2023-10-27
-</div>
-</div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/11/a6/80/11a680e6-2e48-08fa-5e87-3f18e838d31f/23UM1IM11868.rgb.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="1989 (Taylor's Version)">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-1989 (Taylor’s Version)
-</div>
-<div style="color: #666; font-size: 0.8em;">
-2023-10-27
-</div>
-</div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/9f/3c/0a/9f3c0a60-f9e0-a34e-60e5-0be1f182896b/23UMGIM63932.rgb.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="Speak Now (Taylor's Version)">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-Speak Now (Taylor’s Version)
-</div>
-<div style="color: #666; font-size: 0.8em;">
-2023-07-07
-</div>
-</div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/ff/e8/8a/ffe88ac5-9468-0671-9968-3438faad2cc1/22UM1IM22512.rgb.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="Midnights (3am Edition)">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-Midnights (3am Edition)
-</div>
-<div style="color: #666; font-size: 0.8em;">
-2022-10-21
-</div>
-</div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/11/33/de/1133deee-070e-98d3-950a-2269807b074e/22UM1IM24801.rgb.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="Midnights">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-Midnights
-</div>
-<div style="color: #666; font-size: 0.8em;">
-2022-10-21
-</div>
-</div>
-</div>
+<section id="how-similarity-is-measured" class="level2">
+<h2 class="anchored" data-anchor-id="how-similarity-is-measured">How Similarity Is Measured</h2>
+<p>Album covers were analyzed across two visual dimensions:</p>
+<ol type="1">
+<li><strong>Color (HSV Palette):</strong> Compares the distribution of hue, color saturation, and brightness across the image.</li>
+<li><strong>Design (Spatial Composition):</strong> Compares the spatial layout, balance of light and dark regions, and structural composition.</li>
+</ol>
+<p>Scores range from <strong>-1.0</strong> (complete opposites) to <strong>+1.0</strong> (virtually identical).</p>
+<hr>
 </section>
-<section id="red-hot-chili-peppers" class="level2">
-<h2 class="anchored" data-anchor-id="red-hot-chili-peppers">Red Hot Chili Peppers</h2>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px;">
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/22/3e/ed/223eedeb-3ad1-2bd8-c863-ab6fb39d658a/093624920137.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="The Getaway">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-The Getaway
-</div>
-<div style="color: #666; font-size: 0.8em;">
-2016-06-17
-</div>
-</div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music/v4/62/84/ec/6284ec7e-ba57-92f6-3be4-e79f76c3d0a3/093624950950.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="Rock &amp; Roll Hall of Fame Covers - EP">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-Rock &amp; Roll Hall of Fame Covers - EP
-</div>
-<div style="color: #666; font-size: 0.8em;">
-2012-05-01
+<section id="most-similar-album-covers" class="level2">
+<h2 class="anchored" data-anchor-id="most-similar-album-covers">Most Similar Album Covers</h2>
+<p>These pairs share matching color palettes, tone, and visual structure.</p>
+<div style="background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+<h4 style="margin-top: 0; color: #333;" class="anchored">
+folklore (Taylor Swift) vs.&nbsp;evermore (Taylor Swift)
+</h4>
+<p style="margin-bottom: 12px; font-weight: 500;">
+Overall Similarity: <strong>77.8%</strong> | Color: 90.4% | Design: 65.1%
+</p>
+<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
+<div style="text-align: center;">
+<img src="images/02_Tay_folklore.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+folklore
 </div>
 </div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music/e6/42/c5/mzi.qdkdvmtf.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="iTunes Originals: Red Hot Chili Peppers">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-iTunes Originals: Red Hot Chili Peppers
+<div style="font-size: 1.5em; color: #888; font-weight: bold;">
++
 </div>
-<div style="color: #666; font-size: 0.8em;">
-2006-09-12
-</div>
-</div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music5/v4/5e/49/35/5e493511-d87b-5aa2-b379-30fffbae902b/093624932154.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="Stadium Arcadium">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-Stadium Arcadium
-</div>
-<div style="color: #666; font-size: 0.8em;">
-2006-05-09
+<div style="text-align: center;">
+<img src="images/05_Tay_evermore.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+evermore
 </div>
 </div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/94/d4/24/94d42473-eb0e-229b-dd84-900a1874a91d/093624931980.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="Greatest Hits">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
+</div>
+</div>
+<div style="background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+<h4 style="margin-top: 0; color: #333;" class="anchored">
+I’m with You (Red Hot Chili Peppers) vs.&nbsp;Greatest Hits (Red Hot Chili Peppers)
+</h4>
+<p style="margin-bottom: 12px; font-weight: 500;">
+Overall Similarity: <strong>66.8%</strong> | Color: 95.8% | Design: 37.8%
+</p>
+<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
+<div style="text-align: center;">
+<img src="images/10_Red_ImwithYou.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+I’m with You
+</div>
+</div>
+<div style="font-size: 1.5em; color: #888; font-weight: bold;">
++
+</div>
+<div style="text-align: center;">
+<img src="images/11_Red_GreatestHits.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
 Greatest Hits
 </div>
-<div style="color: #666; font-size: 0.8em;">
-2003-11-18
 </div>
 </div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music/08/8f/0b/mzi.lbejlbmn.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="The Videos">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-The Videos
 </div>
-<div style="color: #666; font-size: 0.8em;">
-2003-11-18
+<div style="background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+<h4 style="margin-top: 0; color: #333;" class="anchored">
+evermore (Taylor Swift) vs.&nbsp;reputation (Taylor Swift)
+</h4>
+<p style="margin-bottom: 12px; font-weight: 500;">
+Overall Similarity: <strong>63.6%</strong> | Color: 90.4% | Design: 36.8%
+</p>
+<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
+<div style="text-align: center;">
+<img src="images/05_Tay_evermore.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+evermore
 </div>
 </div>
-<div style="border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center;">
-<img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/f9/ff/09/f9ff09e5-067f-32fa-a5b8-58ebb7591f3f/093624816751.jpg/600x600bb.jpg" style="width: 100%; border-radius: 4px;" alt="Higher Ground / If You Want Me To Stay - EP">
-<div style="font-weight: bold; margin-top: 6px; font-size: 0.9em;">
-Higher Ground / If You Want Me To Stay - EP
+<div style="font-size: 1.5em; color: #888; font-weight: bold;">
++
 </div>
-<div style="color: #666; font-size: 0.8em;">
-1992-01-01
+<div style="text-align: center;">
+<img src="images/09_Tay_reputation.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+reputation
 </div>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>folklore &amp; evermore:</strong> Sister albums with almost identical woodland photography, desaturated sepia tones, and centered subject composition.</li>
+<li><strong>I’m with You &amp; Greatest Hits:</strong> Minimalist white backgrounds with centered, high-contrast focal points.</li>
+</ul>
+<hr>
+</section>
+<section id="least-similar-album-covers" class="level2">
+<h2 class="anchored" data-anchor-id="least-similar-album-covers">Least Similar Album Covers</h2>
+<p>These pairs contrast drastically in both palette (vibrant psychedelic vs.&nbsp;stark monochrome) and design density.</p>
+<div style="background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+<h4 style="margin-top: 0; color: #333;" class="anchored">
+I’m with You (Red Hot Chili Peppers) vs.&nbsp;Return of the Dream Canteen (Red Hot Chili Peppers)
+</h4>
+<p style="margin-bottom: 12px; font-weight: 500;">
+Overall Similarity: <strong>-7.6%</strong> | Color: 17.2% | Design: -32.4%
+</p>
+<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
+<div style="text-align: center;">
+<img src="images/10_Red_ImwithYou.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+I’m with You
+</div>
+</div>
+<div style="font-size: 1.5em; color: #888; font-weight: bold;">
+≠
+</div>
+<div style="text-align: center;">
+<img src="images/18_Red_ReturnoftheD.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+Return of the Dream Canteen
+</div>
+</div>
+</div>
+</div>
+<div style="background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+<h4 style="margin-top: 0; color: #333;" class="anchored">
+Lover (Taylor Swift) vs.&nbsp;THE TORTURED POETS DEPARTMENT: THE ANTHOLOGY (Taylor Swift)
+</h4>
+<p style="margin-bottom: 12px; font-weight: 500;">
+Overall Similarity: <strong>-11.8%</strong> | Color: 37.6% | Design: -61.2%
+</p>
+<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
+<div style="text-align: center;">
+<img src="images/00_Tay_Lover.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+Lover
+</div>
+</div>
+<div style="font-size: 1.5em; color: #888; font-weight: bold;">
+≠
+</div>
+<div style="text-align: center;">
+<img src="images/01_Tay_THETORTUREDP.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+THE TORTURED POETS DEPARTMENT: THE ANTHOLOGY
+</div>
+</div>
+</div>
+</div>
+<div style="background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+<h4 style="margin-top: 0; color: #333;" class="anchored">
+Fearless (Taylor Swift) vs.&nbsp;By the Way (Red Hot Chili Peppers)
+</h4>
+<p style="margin-bottom: 12px; font-weight: 500;">
+Overall Similarity: <strong>-12.6%</strong> | Color: 9.8% | Design: -34.9%
+</p>
+<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
+<div style="text-align: center;">
+<img src="images/06_Tay_Fearless.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+Fearless
+</div>
+</div>
+<div style="font-size: 1.5em; color: #888; font-weight: bold;">
+≠
+</div>
+<div style="text-align: center;">
+<img src="images/17_Red_BytheWay.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+By the Way
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>I’m with You vs.&nbsp;Return of the Dream Canteen:</strong> Extreme contrast between Damien Hirst’s clinical white pill aesthetic and complex, neon psychedelic surrealism.</li>
+<li><strong>Lover vs.&nbsp;The Tortured Poets Department:</strong> Bright pastel pinks, baby blues, and dreamy glitter juxtaposed against stark, desaturated grayscale intimacy.</li>
+</ul>
+<hr>
+</section>
+<section id="cross-artist-comparison" class="level2">
+<h2 class="anchored" data-anchor-id="cross-artist-comparison">Cross-Artist Comparison</h2>
+<p>Which album from Taylor Swift is most visually akin to a Red Hot Chili Peppers album?</p>
+<div style="background: #f0f7ff; border: 1px solid #cce3ff; border-radius: 10px; padding: 18px; margin-bottom: 24px;">
+<h4 style="margin-top: 0; color: #004494;" class="anchored">
+Closest Match Across Artists: evermore &amp; Greatest Hits
+</h4>
+<p style="margin-bottom: 12px;">
+Similarity: <strong>63%</strong> (Color: 61.7%, Design: 64.4%)
+</p>
+<div style="display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
+<div style="text-align: center;">
+<img src="images/05_Tay_evermore.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+Taylor Swift - evermore
+</div>
+</div>
+<div style="font-size: 1.5em; color: #004494; font-weight: bold;">
+~
+</div>
+<div style="text-align: center;">
+<img src="images/11_Red_GreatestHits.jpg" style="width: 220px; height: 220px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+<div style="font-size: 0.85em; margin-top: 4px;">
+Red Hot Chili Peppers - Greatest Hits
+</div>
+</div>
+</div>
+<p style="margin-top: 14px; font-size: 0.95em; color: #333;">
+Both covers feature neutral, muted palettes with central figures framed against soft, earthy backdrops.
+</p>
+</div>
+<hr>
+</section>
+<section id="all-analyzed-albums" class="level2">
+<h2 class="anchored" data-anchor-id="all-analyzed-albums">All Analyzed Albums</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 60%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Artist</th>
+<th style="text-align: left;">Album</th>
+<th style="text-align: left;">Release Date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Taylor Swift</td>
+<td style="text-align: left;">Lover</td>
+<td style="text-align: left;">2019-08-23</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Taylor Swift</td>
+<td style="text-align: left;">THE TORTURED POETS DEPARTMENT: THE ANTHOLOGY</td>
+<td style="text-align: left;">2024-04-19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Taylor Swift</td>
+<td style="text-align: left;">folklore</td>
+<td style="text-align: left;">2020-07-24</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Taylor Swift</td>
+<td style="text-align: left;">Midnights</td>
+<td style="text-align: left;">2022-10-21</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Taylor Swift</td>
+<td style="text-align: left;">Red</td>
+<td style="text-align: left;">2021-11-12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Taylor Swift</td>
+<td style="text-align: left;">evermore</td>
+<td style="text-align: left;">2020-12-11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Taylor Swift</td>
+<td style="text-align: left;">Fearless</td>
+<td style="text-align: left;">2021-04-09</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Taylor Swift</td>
+<td style="text-align: left;">The Life of a Showgirl + “A Look Behind the Curtain”</td>
+<td style="text-align: left;">2025-10-03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Taylor Swift</td>
+<td style="text-align: left;">Speak Now</td>
+<td style="text-align: left;">2023-07-07</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Taylor Swift</td>
+<td style="text-align: left;">reputation</td>
+<td style="text-align: left;">2017-11-10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Red Hot Chili Peppers</td>
+<td style="text-align: left;">I’m with You</td>
+<td style="text-align: left;">2011-08-26</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Red Hot Chili Peppers</td>
+<td style="text-align: left;">Greatest Hits</td>
+<td style="text-align: left;">2003-11-18</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Red Hot Chili Peppers</td>
+<td style="text-align: left;">The Getaway</td>
+<td style="text-align: left;">2016-06-17</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Red Hot Chili Peppers</td>
+<td style="text-align: left;">Blood Sugar Sex Magik</td>
+<td style="text-align: left;">1991-09-24</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Red Hot Chili Peppers</td>
+<td style="text-align: left;">Stadium Arcadium</td>
+<td style="text-align: left;">2006-05-09</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Red Hot Chili Peppers</td>
+<td style="text-align: left;">Unlimited Love</td>
+<td style="text-align: left;">2022-04-01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Red Hot Chili Peppers</td>
+<td style="text-align: left;">Californication</td>
+<td style="text-align: left;">1999-06-08</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Red Hot Chili Peppers</td>
+<td style="text-align: left;">By the Way</td>
+<td style="text-align: left;">2002-07-09</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Red Hot Chili Peppers</td>
+<td style="text-align: left;">Return of the Dream Canteen</td>
+<td style="text-align: left;">2022-10-14</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Red Hot Chili Peppers</td>
+<td style="text-align: left;">Rock &amp; Roll Hall of Fame Covers - EP</td>
+<td style="text-align: left;">2012-05-01</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 
@@ -370,7 +606,7 @@ Higher Ground / If You Want Me To Stay - EP
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/ccupit4\.github\.io\/albums\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

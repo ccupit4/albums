@@ -2,23 +2,44 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Album Covers",
+    "title": "Album Cover Similarity Analysis",
     "section": "",
-    "text": "This site showcases album covers and release information for Taylor Swift and Red Hot Chili Peppers, retrieved using the iTunes Search API."
+    "text": "Code\nlibrary(tidyverse)\n\n# Load metadata and pairwise similarity metrics\nalbums &lt;- read_csv(\"album_metadata.csv\", show_col_types = FALSE)\npairs &lt;- read_csv(\"album_similarity_pairs.csv\", show_col_types = FALSE)"
   },
   {
-    "objectID": "index.html#taylor-swift",
-    "href": "index.html#taylor-swift",
-    "title": "Album Covers",
-    "section": "Taylor Swift",
-    "text": "Taylor Swift\n\n\n\n\nThe Life of a Showgirl\n\n\n2025-10-03\n\n\n\n\n\nTHE TORTURED POETS DEPARTMENT: THE ANTHOLOGY\n\n\n2024-04-19\n\n\n\n\n\nTHE TORTURED POETS DEPARTMENT\n\n\n2024-04-19\n\n\n\n\n\n1989 (Taylor’s Version) [Deluxe]\n\n\n2023-10-27\n\n\n\n\n\n1989 (Taylor’s Version)\n\n\n2023-10-27\n\n\n\n\n\nSpeak Now (Taylor’s Version)\n\n\n2023-07-07\n\n\n\n\n\nMidnights (3am Edition)\n\n\n2022-10-21\n\n\n\n\n\nMidnights\n\n\n2022-10-21"
+    "objectID": "index.html#how-similarity-is-measured",
+    "href": "index.html#how-similarity-is-measured",
+    "title": "Album Cover Similarity Analysis",
+    "section": "How Similarity Is Measured",
+    "text": "How Similarity Is Measured\nAlbum covers were analyzed across two visual dimensions:\n\nColor (HSV Palette): Compares the distribution of hue, color saturation, and brightness across the image.\nDesign (Spatial Composition): Compares the spatial layout, balance of light and dark regions, and structural composition.\n\nScores range from -1.0 (complete opposites) to +1.0 (virtually identical)."
   },
   {
-    "objectID": "index.html#red-hot-chili-peppers",
-    "href": "index.html#red-hot-chili-peppers",
-    "title": "Album Covers",
-    "section": "Red Hot Chili Peppers",
-    "text": "Red Hot Chili Peppers\n\n\n\n\nThe Getaway\n\n\n2016-06-17\n\n\n\n\n\nRock & Roll Hall of Fame Covers - EP\n\n\n2012-05-01\n\n\n\n\n\niTunes Originals: Red Hot Chili Peppers\n\n\n2006-09-12\n\n\n\n\n\nStadium Arcadium\n\n\n2006-05-09\n\n\n\n\n\nGreatest Hits\n\n\n2003-11-18\n\n\n\n\n\nThe Videos\n\n\n2003-11-18\n\n\n\n\n\nHigher Ground / If You Want Me To Stay - EP\n\n\n1992-01-01"
+    "objectID": "index.html#most-similar-album-covers",
+    "href": "index.html#most-similar-album-covers",
+    "title": "Album Cover Similarity Analysis",
+    "section": "Most Similar Album Covers",
+    "text": "Most Similar Album Covers\nThese pairs share matching color palettes, tone, and visual structure.\n\n\nfolklore (Taylor Swift) vs. evermore (Taylor Swift)\n\n\nOverall Similarity: 77.8% | Color: 90.4% | Design: 65.1%\n\n\n\n\n\nfolklore\n\n\n\n+\n\n\n\n\nevermore\n\n\n\n\n\n\nI’m with You (Red Hot Chili Peppers) vs. Greatest Hits (Red Hot Chili Peppers)\n\n\nOverall Similarity: 66.8% | Color: 95.8% | Design: 37.8%\n\n\n\n\n\nI’m with You\n\n\n\n+\n\n\n\n\nGreatest Hits\n\n\n\n\n\n\nevermore (Taylor Swift) vs. reputation (Taylor Swift)\n\n\nOverall Similarity: 63.6% | Color: 90.4% | Design: 36.8%\n\n\n\n\n\nevermore\n\n\n\n+\n\n\n\n\nreputation\n\n\n\n\n\nfolklore & evermore: Sister albums with almost identical woodland photography, desaturated sepia tones, and centered subject composition.\nI’m with You & Greatest Hits: Minimalist white backgrounds with centered, high-contrast focal points."
+  },
+  {
+    "objectID": "index.html#least-similar-album-covers",
+    "href": "index.html#least-similar-album-covers",
+    "title": "Album Cover Similarity Analysis",
+    "section": "Least Similar Album Covers",
+    "text": "Least Similar Album Covers\nThese pairs contrast drastically in both palette (vibrant psychedelic vs. stark monochrome) and design density.\n\n\nI’m with You (Red Hot Chili Peppers) vs. Return of the Dream Canteen (Red Hot Chili Peppers)\n\n\nOverall Similarity: -7.6% | Color: 17.2% | Design: -32.4%\n\n\n\n\n\nI’m with You\n\n\n\n≠\n\n\n\n\nReturn of the Dream Canteen\n\n\n\n\n\n\nLover (Taylor Swift) vs. THE TORTURED POETS DEPARTMENT: THE ANTHOLOGY (Taylor Swift)\n\n\nOverall Similarity: -11.8% | Color: 37.6% | Design: -61.2%\n\n\n\n\n\nLover\n\n\n\n≠\n\n\n\n\nTHE TORTURED POETS DEPARTMENT: THE ANTHOLOGY\n\n\n\n\n\n\nFearless (Taylor Swift) vs. By the Way (Red Hot Chili Peppers)\n\n\nOverall Similarity: -12.6% | Color: 9.8% | Design: -34.9%\n\n\n\n\n\nFearless\n\n\n\n≠\n\n\n\n\nBy the Way\n\n\n\n\n\nI’m with You vs. Return of the Dream Canteen: Extreme contrast between Damien Hirst’s clinical white pill aesthetic and complex, neon psychedelic surrealism.\nLover vs. The Tortured Poets Department: Bright pastel pinks, baby blues, and dreamy glitter juxtaposed against stark, desaturated grayscale intimacy."
+  },
+  {
+    "objectID": "index.html#cross-artist-comparison",
+    "href": "index.html#cross-artist-comparison",
+    "title": "Album Cover Similarity Analysis",
+    "section": "Cross-Artist Comparison",
+    "text": "Cross-Artist Comparison\nWhich album from Taylor Swift is most visually akin to a Red Hot Chili Peppers album?\n\n\nClosest Match Across Artists: evermore & Greatest Hits\n\n\nSimilarity: 63% (Color: 61.7%, Design: 64.4%)\n\n\n\n\n\nTaylor Swift - evermore\n\n\n\n~\n\n\n\n\nRed Hot Chili Peppers - Greatest Hits\n\n\n\n\nBoth covers feature neutral, muted palettes with central figures framed against soft, earthy backdrops."
+  },
+  {
+    "objectID": "index.html#all-analyzed-albums",
+    "href": "index.html#all-analyzed-albums",
+    "title": "Album Cover Similarity Analysis",
+    "section": "All Analyzed Albums",
+    "text": "All Analyzed Albums\n\n\n\n\n\n\n\n\n\n\nArtist\nAlbum\nRelease Date\n\n\n\n\nTaylor Swift\nLover\n2019-08-23\n\n\nTaylor Swift\nTHE TORTURED POETS DEPARTMENT: THE ANTHOLOGY\n2024-04-19\n\n\nTaylor Swift\nfolklore\n2020-07-24\n\n\nTaylor Swift\nMidnights\n2022-10-21\n\n\nTaylor Swift\nRed\n2021-11-12\n\n\nTaylor Swift\nevermore\n2020-12-11\n\n\nTaylor Swift\nFearless\n2021-04-09\n\n\nTaylor Swift\nThe Life of a Showgirl + “A Look Behind the Curtain”\n2025-10-03\n\n\nTaylor Swift\nSpeak Now\n2023-07-07\n\n\nTaylor Swift\nreputation\n2017-11-10\n\n\nRed Hot Chili Peppers\nI’m with You\n2011-08-26\n\n\nRed Hot Chili Peppers\nGreatest Hits\n2003-11-18\n\n\nRed Hot Chili Peppers\nThe Getaway\n2016-06-17\n\n\nRed Hot Chili Peppers\nBlood Sugar Sex Magik\n1991-09-24\n\n\nRed Hot Chili Peppers\nStadium Arcadium\n2006-05-09\n\n\nRed Hot Chili Peppers\nUnlimited Love\n2022-04-01\n\n\nRed Hot Chili Peppers\nCalifornication\n1999-06-08\n\n\nRed Hot Chili Peppers\nBy the Way\n2002-07-09\n\n\nRed Hot Chili Peppers\nReturn of the Dream Canteen\n2022-10-14\n\n\nRed Hot Chili Peppers\nRock & Roll Hall of Fame Covers - EP\n2012-05-01"
   },
   {
     "objectID": "about.html",
